@@ -78,18 +78,21 @@ func (p *PluginManagerDialog) buildInstalledPluginsTab() *fyne.Container {
 	pluginList := container.NewVBox()
 
 	// Get all loaded plugins
-	plugins := p.pluginManager.ListPlugins()
+	var pluginsList []*plugins.Plugin
+	if p.pluginManager != nil {
+		pluginsList = p.pluginManager.ListPlugins()
+	}
 
 	// Sort by name for consistent display
-	sort.Slice(plugins, func(i, j int) bool {
-		return plugins[i].Name < plugins[j].Name
+	sort.Slice(pluginsList, func(i, j int) bool {
+		return pluginsList[i].Name < pluginsList[j].Name
 	})
 
-	if len(plugins) == 0 {
+	if len(pluginsList) == 0 {
 		pluginList.Add(widget.NewLabel("No plugins installed"))
 	}
 
-	for _, plugin := range plugins {
+	for _, plugin := range pluginsList {
 		// Create plugin entry
 		p.createPluginEntry(plugin, pluginList)
 	}

@@ -76,10 +76,24 @@ func (d *PluginBrowserDialog) Show() {
 		}
 	}()
 
+	// Safety check for nil window
+	if d.window == nil {
+		return
+	}
+
 	// Build UI components FIRST before any goroutines
 	header := d.buildHeader()
+	if header == nil {
+		return
+	}
 	content := d.buildContent()
+	if content == nil {
+		return
+	}
 	footer := d.buildFooter()
+	if footer == nil {
+		return
+	}
 
 	// Assemble dialog content
 	dialogContent := container.NewBorder(
@@ -105,10 +119,8 @@ func (d *PluginBrowserDialog) buildHeader() *fyne.Container {
 	// Search entry
 	d.searchEntry = widget.NewEntry()
 	d.searchEntry.SetPlaceHolder("Search plugins...")
-	d.searchEntry.OnChanged = func(query string) {
-		d.filterAndSortPlugins()
-	}
-
+	// Don't set OnChanged yet - set it after all widgets are created
+	
 	// Category selector
 	categories := []string{
 		"All Categories",
@@ -118,9 +130,7 @@ func (d *PluginBrowserDialog) buildHeader() *fyne.Container {
 		"Automation",
 		"Utilities",
 	}
-	d.categorySelect = widget.NewSelect(categories, func(selected string) {
-		d.filterAndSortPlugins()
-	})
+	d.categorySelect = widget.NewSelect(categories, nil) // Don't set callback yet
 	d.categorySelect.SetSelected("All Categories")
 
 	// Sort selector
@@ -130,15 +140,24 @@ func (d *PluginBrowserDialog) buildHeader() *fyne.Container {
 		"Highest Rated",
 		"Name (A-Z)",
 	}
-	d.sortSelect = widget.NewSelect(sortOptions, func(selected string) {
-		d.filterAndSortPlugins()
-	})
+	d.sortSelect = widget.NewSelect(sortOptions, nil) // Don't set callback yet
 	d.sortSelect.SetSelected("Popular")
 
 	// Refresh button
 	d.refreshBtn = widget.NewButtonWithIcon("Refresh", theme.ViewRefreshIcon(), func() {
 		go d.refreshPluginList()
 	})
+
+	// NOW set the callbacks after all widgets are initialized
+	d.searchEntry.OnChanged = func(query string) {
+		d.filterAndSortPlugins()
+	}
+	d.categorySelect.OnChanged = func(selected string) {
+		d.filterAndSortPlugins()
+	}
+	d.sortSelect.OnChanged = func(selected string) {
+		d.filterAndSortPlugins()
+	}
 
 	// Layout header
 	searchRow := container.NewBorder(
