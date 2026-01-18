@@ -1,0 +1,20 @@
+{
+  "id": "party-optimizer",
+  "name": "Party Optimizer",
+  "version": "1.0.0",
+  "author": "FF6 Editor Team",
+  "description": "Analyze characters and optimize party composition with ranking systems, role balancing, and detailed stat comparisons.",
+  "longDescription": "A comprehensive party optimization tool that analyzes all available characters, ranks them by various metrics (combat power, magic, physical, tank, speed), and provides intelligent recommendations for optimal party composition. Features include character comparison, current party analysis with balance scoring, and automatic role diversification for well-rounded teams.",
+  "category": "utility",
+  "tags": ["party", "optimization", "analysis", "characters", "stats", "comparison", "ranking"],
+  "permissions": ["read_save", "write_save", "ui_display"],
+  "apiVersion": "1.0",
+  "minEditorVersion": "3.4.0",
+  "entryPoint": "plugin.lua",
+  "homepage": "https://github.com/ff6-save-editor/plugin-registry",
+  "repository": "https://github.com/ff6-save-editor/plugin-registry",
+  "license": "MIT",
+  "dependencies": [],
+  "screenshots": ["screenshot.png"],
+  "changelog": "CHANGELOG.md"
+}

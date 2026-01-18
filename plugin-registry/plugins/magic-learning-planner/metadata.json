@@ -1,0 +1,20 @@
+{
+  "id": "magic-learning-planner",
+  "name": "Magic Learning Planner",
+  "version": "1.0.0",
+  "author": "FF6 Editor Team",
+  "description": "Track spell learning progress, recommend optimal esper assignments, and calculate AP requirements for complete spell mastery.",
+  "longDescription": "A comprehensive magic learning tracking and planning tool that shows which spells each character has learned, recommends which espers to equip for optimal spell acquisition, calculates AP needed to master spells, and helps you plan the most efficient path to learning all magic. Perfect for completionists and players who want to optimize their spell learning strategy.",
+  "category": "utility",
+  "tags": ["magic", "spells", "espers", "learning", "planning", "progression", "AP"],
+  "permissions": ["read_save", "ui_display"],
+  "apiVersion": "1.0",
+  "minEditorVersion": "3.4.0",
+  "entryPoint": "plugin.lua",
+  "homepage": "https://github.com/ff6-save-editor/plugin-registry",
+  "repository": "https://github.com/ff6-save-editor/plugin-registry",
+  "license": "MIT",
+  "dependencies": [],
+  "screenshots": ["screenshot.png"],
+  "changelog": "CHANGELOG.md"
+}

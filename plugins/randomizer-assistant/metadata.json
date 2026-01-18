@@ -1,0 +1,32 @@
+{
+  "id": "randomizer-assistant",
+  "name": "Randomizer Assistant",
+  "description": "Support for randomized game seeds with spoiler log import, item/character location tracking, logic validation, and progression tracking.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.0.0",
+  "permissions": ["read_save", "ui_display", "file_io"],
+  "priority": "low-medium",
+  "category": "challenge-advanced",
+  "phase": 5,
+  "week": 10,
+  "tags": ["randomizer", "tracker", "spoiler-log", "logic"],
+  "dependencies": [],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release",
+        "Spoiler log import/parser (JSON/CSV)",
+        "Item location tracker with check-off system",
+        "Character location tracker",
+        "Boss shuffle tracking",
+        "Ability randomization display",
+        "Logic validation (seed beatability)",
+        "Accessibility checker (reachable locations)",
+        "Progression tracking",
+        "Seed metadata display"
+      ]
+    }
+  ]
+}

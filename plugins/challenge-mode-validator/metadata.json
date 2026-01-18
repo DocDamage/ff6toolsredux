@@ -1,0 +1,40 @@
+{
+  "id": "challenge-mode-validator",
+  "name": "Challenge Mode Validator",
+  "description": "Verify challenge run compliance with preset templates and custom rules. Detect violations in real-time and export challenge proof.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.2.0",
+  "permissions": ["read_save", "ui_display", "file_io"],
+  "priority": "low-medium",
+  "category": "challenge-advanced",
+  "phase": 5,
+  "week": 9,
+  "tags": ["challenge", "validation", "rules", "compliance", "analytics", "visualization", "import-export", "backup", "api"],
+  "dependencies": [],
+  "changelog": [
+    {
+      "version": "1.2.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Phase 11 integrations: analytics trends, compliance dashboard, reports",
+        "Import/export challenge templates",
+        "Backup snapshots and restore",
+        "Automation scheduling for validation",
+        "Integration Hub sync and API endpoint"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release",
+        "9 preset challenge modes",
+        "Custom rule creation",
+        "Real-time violation detection",
+        "Violation log with timestamps",
+        "Challenge verification report",
+        "Export challenge proof"
+      ]
+    }
+  ]
+}

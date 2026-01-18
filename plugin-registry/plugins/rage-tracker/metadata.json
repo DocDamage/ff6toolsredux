@@ -1,0 +1,20 @@
+{
+  "id": "rage-tracker",
+  "name": "Gau's Rage Tracker",
+  "version": "1.0.0",
+  "author": "FF6 Editor Team",
+  "contact": "https://github.com/ff6-save-editor",
+  "description": "Track all 384 Rages that Gau can learn on the Veldt with filtering, search, and location guides",
+  "longDescription": "The Rage Tracker plugin provides comprehensive tracking of all 384 Rages that Gau can learn from enemies on the Veldt. This is the most extensive character-specific tracker in the plugin collection, featuring a complete database of every enemy that appears on the Veldt, advanced filtering by location and enemy type, powerful search functionality, formation guides showing which enemies appear together, batch operations for marking zones complete, and detailed statistics tracking. Perfect for completionists attempting to master all of Gau's Rages, with features including learned/unlearned checklist, enemy formation information, location-based filtering, ability descriptions, and import/export functionality for checklists.",
+  "category": "tracker",
+  "tags": ["rage", "gau", "veldt", "tracker", "collection", "completionist", "enemies", "formations"],
+  "permissions": ["read_save", "ui_display"],
+  "minEditorVersion": "3.4.0",
+  "homepage": "https://github.com/ff6-save-editor/plugin-registry/tree/main/plugins/rage-tracker",
+  "repository": "https://github.com/ff6-save-editor/plugin-registry",
+  "license": "MIT",
+  "dependencies": [],
+  "screenshots": [],
+  "documentation": "README.md",
+  "changelog": "CHANGELOG.md"
+}

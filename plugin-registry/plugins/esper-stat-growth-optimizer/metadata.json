@@ -1,0 +1,13 @@
+{
+  "id": "esper-stat-growth-optimizer",
+  "name": "Esper Stat Growth Optimizer",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Plan level-up routes for stat gains using esper bonuses with target stat goals and per-level recommendations.",
+  "permissions": ["read_save", "ui_display"],
+  "min_editor_version": "3.4.0",
+  "tags": ["esper", "optimizer", "stats", "planning"],
+  "category": "strategy",
+  "api_dependencies": ["character", "esper"],
+  "status": "stable"
+}

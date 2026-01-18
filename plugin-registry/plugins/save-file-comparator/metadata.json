@@ -1,0 +1,13 @@
+{
+  "id": "save-file-comparator",
+  "name": "Save File Comparator",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Compare two save files side-by-side with diff view, merge capabilities, and category-based comparison.",
+  "permissions": ["read_save", "write_save", "ui_display", "file_io"],
+  "min_editor_version": "3.4.0",
+  "tags": ["comparison", "diff", "merge", "analysis"],
+  "category": "utility",
+  "api_dependencies": ["character", "inventory", "save_loader", "file"],
+  "status": "stable"
+}

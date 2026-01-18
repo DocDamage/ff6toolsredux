@@ -1,0 +1,571 @@
+package plugins
+
+import (
+	"sync"
+	"testing"
+	"time"
+)
+
+// TestNewSandboxManager tests creation of a new sandbox manager
+func TestNewSandboxManager(t *testing.T) {
+	sm := NewSandboxManager()
+	if sm == nil {
+		t.Fatal("NewSandboxManager returned nil")
+	}
+	
+	if sm.policies == nil {
+		t.Error("policies map not initialized")
+	}
+	
+	if sm.violations == nil {
+		t.Error("violations map not initialized")
+	}
+}
+
+// TestSetPolicy tests setting a sandbox policy
+func TestSetPolicy(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:           "test_plugin_001",
+		AllowedPermissions: []string{"read_save", "ui_display"},
+		DeniedPermissions:  []string{},
+		MaxMemoryMB:        100,
+		MaxCPUPercent:      50,
+		TimeoutSeconds:     30,
+		IsolationLevel:     "basic",
+		IsActive:           true,
+	}
+	
+	if err := sm.SetPolicy(policy); err != nil {
+		t.Fatalf("SetPolicy failed: %v", err)
+	}
+	
+	// Retrieve and verify policy - GetPolicy returns just pointer, no error
+	retrieved := sm.GetPolicy(policy.PluginID)
+	if retrieved == nil {
+		t.Fatalf("GetPolicy returned nil")
+	}
+	
+	if retrieved.MaxMemoryMB != 100 {
+		t.Errorf("Expected MaxMemoryMB=100, got %d", retrieved.MaxMemoryMB)
+	}
+	
+	if retrieved.IsolationLevel != "basic" {
+		t.Errorf("Expected IsolationLevel='basic', got '%s'", retrieved.IsolationLevel)
+	}
+}
+
+// TestRemovePolicy tests removing a sandbox policy
+func TestRemovePolicy(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:   "test_plugin_002",
+		IsActive:   true,
+	}
+	
+	sm.SetPolicy(policy)
+	
+	if err := sm.RemovePolicy(policy.PluginID); err != nil {
+		t.Fatalf("RemovePolicy failed: %v", err)
+	}
+	
+	// Verify policy removed - GetPolicy returns nil if not found
+	retrieved := sm.GetPolicy(policy.PluginID)
+	if retrieved != nil {
+		t.Error("GetPolicy should return nil for removed policy")
+	}
+}
+
+// TestCheckPermission tests permission checking
+func TestCheckPermission(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:           "test_plugin_003",
+		AllowedPermissions: []string{"read_save", "ui_display"},
+		DeniedPermissions:  []string{"write_save"},
+		IsolationLevel:     "basic",
+		IsActive:           true,
+	}
+	
+	sm.SetPolicy(policy)
+	
+	// Test allowed permission
+	allowed, reason := sm.CheckPermission("test_plugin_003", "read_save")
+	if !allowed {
+		t.Errorf("Permission should be allowed: %s", reason)
+	}
+	
+	// Test denied permission
+	allowed, reason = sm.CheckPermission("test_plugin_003", "write_save")
+	if allowed {
+		t.Error("Permission should be denied")
+	}
+	if reason == "" {
+		t.Error("Denial reason should not be empty")
+	}
+	
+	// Test permission not in whitelist
+	allowed, reason = sm.CheckPermission("test_plugin_003", "network_access")
+	if allowed {
+		t.Error("Permission not in whitelist should be denied")
+	}
+}
+
+// TestCheckPermissionNoPolicy tests permission checking without policy
+func TestCheckPermissionNoPolicy(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	// No policy set for this plugin
+	allowed, reason := sm.CheckPermission("nonexistent_plugin", "read_save")
+	if !allowed {
+		t.Errorf("Permission should be allowed when no policy exists: %s", reason)
+	}
+}
+
+// TestDenyPermission tests denying a specific permission
+func TestDenyPermission(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:           "test_plugin_004",
+		AllowedPermissions: []string{"read_save", "write_save"},
+		DeniedPermissions:  []string{},
+		IsActive:           true,
+	}
+	
+	sm.SetPolicy(policy)
+	
+	// Deny write_save permission
+	if err := sm.DenyPermission("test_plugin_004", "write_save"); err != nil {
+		t.Fatalf("DenyPermission failed: %v", err)
+	}
+	
+	// Verify permission is now denied
+	allowed, _ := sm.CheckPermission("test_plugin_004", "write_save")
+	if allowed {
+		t.Error("write_save should be denied after calling DenyPermission")
+	}
+	
+	// Verify read_save still allowed
+	allowed, _ = sm.CheckPermission("test_plugin_004", "read_save")
+	if !allowed {
+		t.Error("read_save should still be allowed")
+	}
+}
+
+// TestAllowPermission tests allowing a specific permission
+func TestAllowPermission(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:           "test_plugin_005",
+		AllowedPermissions: []string{"read_save"},
+		DeniedPermissions:  []string{},
+		IsActive:           true,
+	}
+	
+	sm.SetPolicy(policy)
+	
+	// Allow write_save permission
+	if err := sm.AllowPermission("test_plugin_005", "write_save"); err != nil {
+		t.Fatalf("AllowPermission failed: %v", err)
+	}
+	
+	// Verify permission is now allowed
+	allowed, _ := sm.CheckPermission("test_plugin_005", "write_save")
+	if !allowed {
+		t.Error("write_save should be allowed after calling AllowPermission")
+	}
+}
+
+// TestVerifyMemoryUsage tests memory limit verification
+func TestVerifyMemoryUsage(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:    "test_plugin_006",
+		MaxMemoryMB: 100,
+		IsActive:    true,
+	}
+	
+	sm.SetPolicy(policy)
+	
+	// Test within limits - convert MB to bytes (50MB = 50 * 1024 * 1024 bytes)
+	violated, reason := sm.VerifyMemoryUsage("test_plugin_006", 50*1024*1024)
+	if violated {
+		t.Errorf("50MB should be within 100MB limit: %s", reason)
+	}
+	
+	// Test exceeding limits - convert MB to bytes (150MB = 150 * 1024 * 1024 bytes)
+	violated, reason = sm.VerifyMemoryUsage("test_plugin_006", 150*1024*1024)
+	if !violated {
+		t.Error("150MB should exceed 100MB limit")
+	}
+	if reason == "" {
+		t.Error("Violation reason should not be empty")
+	}
+}
+
+// TestVerifyExecutionTime tests execution timeout verification
+func TestVerifyExecutionTime(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:       "test_plugin_007",
+		TimeoutSeconds: 30,
+		IsActive:       true,
+	}
+	
+	sm.SetPolicy(policy)
+	
+	// Test within limits
+	violated, reason := sm.VerifyExecutionTime("test_plugin_007", 15*time.Second)
+	if violated {
+		t.Errorf("15s should be within 30s limit: %s", reason)
+	}
+	
+	// Test exceeding limits
+	violated, reason = sm.VerifyExecutionTime("test_plugin_007", 45*time.Second)
+	if !violated {
+		t.Error("45s should exceed 30s limit")
+	}
+	if reason == "" {
+		t.Error("Violation reason should not be empty")
+	}
+}
+
+// TestGetViolations tests retrieving violations for a plugin
+func TestGetViolations(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:    "test_plugin_008",
+		MaxMemoryMB: 100,
+		IsActive:    true,
+	}
+	
+	sm.SetPolicy(policy)
+	
+	// Trigger some violations - convert MB to bytes
+	sm.VerifyMemoryUsage("test_plugin_008", 150*1024*1024)
+	sm.CheckPermission("test_plugin_008", "forbidden_permission")
+	
+	// Get violations
+	violations := sm.GetViolations("test_plugin_008")
+	if len(violations) < 1 {
+		t.Error("Expected at least 1 violation")
+	}
+}
+
+// TestGetAllViolations tests retrieving all violations
+func TestGetAllViolations(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	// Set policies for multiple plugins
+	policy1 := &SandboxPolicy{
+		PluginID:    "plugin1",
+		MaxMemoryMB: 100,
+		IsActive:    true,
+	}
+	policy2 := &SandboxPolicy{
+		PluginID:       "plugin2",
+		TimeoutSeconds: 30,
+		IsActive:       true,
+	}
+	
+	sm.SetPolicy(policy1)
+	sm.SetPolicy(policy2)
+	
+	// Trigger violations - convert MB to bytes
+	sm.VerifyMemoryUsage("plugin1", 150*1024*1024)
+	sm.VerifyExecutionTime("plugin2", 45*time.Second)
+	
+	// Get all violations
+	violations := sm.GetAllViolations()
+	if len(violations) < 2 {
+		t.Error("Expected at least 2 violations across all plugins")
+	}
+}
+
+// TestGetViolationsByType tests filtering violations by type
+func TestGetViolationsByType(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:       "test_plugin_009",
+		MaxMemoryMB:    100,
+		TimeoutSeconds: 30,
+		IsActive:       true,
+	}
+	
+	sm.SetPolicy(policy)
+	
+	// Trigger different types of violations - convert MB to bytes
+	sm.VerifyMemoryUsage("test_plugin_009", 150*1024*1024)
+	sm.VerifyMemoryUsage("test_plugin_009", 200*1024*1024)
+	sm.VerifyExecutionTime("test_plugin_009", 45*time.Second)
+	
+	// Get memory violations
+	memoryViolations := sm.GetViolationsByType("test_plugin_009", "memory_exceeded")
+	if len(memoryViolations) != 2 {
+		t.Errorf("Expected 2 memory violations, got %d", len(memoryViolations))
+	}
+	
+	// Get timeout violations
+	timeoutViolations := sm.GetViolationsByType("test_plugin_009", "timeout")
+	if len(timeoutViolations) != 1 {
+		t.Errorf("Expected 1 timeout violation, got %d", len(timeoutViolations))
+	}
+}
+
+// TestClearViolations tests clearing violations for a plugin
+func TestClearViolations(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:    "test_plugin_010",
+		MaxMemoryMB: 100,
+		IsActive:    true,
+	}
+	
+	sm.SetPolicy(policy)
+	
+	// Trigger violations - convert MB to bytes
+	sm.VerifyMemoryUsage("test_plugin_010", 150*1024*1024)
+	sm.VerifyMemoryUsage("test_plugin_010", 200*1024*1024)
+	
+	// Verify violations exist
+	violations := sm.GetViolations("test_plugin_010")
+	if len(violations) == 0 {
+		t.Error("Expected violations before clearing")
+	}
+	
+	// Clear violations
+	sm.ClearViolations("test_plugin_010")
+	
+	// Verify violations cleared
+	violations = sm.GetViolations("test_plugin_010")
+	if len(violations) != 0 {
+		t.Errorf("Expected 0 violations after clearing, got %d", len(violations))
+	}
+}
+
+// TestGetViolationStats tests violation statistics
+func TestGetViolationStats(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:       "test_plugin_011",
+		MaxMemoryMB:    100,
+		TimeoutSeconds: 30,
+		IsActive:       true,
+	}
+	
+	sm.SetPolicy(policy)
+	
+	// Trigger various violations - convert MB to bytes
+	sm.VerifyMemoryUsage("test_plugin_011", 150*1024*1024)
+	sm.VerifyMemoryUsage("test_plugin_011", 200*1024*1024)
+	sm.VerifyExecutionTime("test_plugin_011", 45*time.Second)
+	
+	stats := sm.GetViolationStats("test_plugin_011")
+	
+	if stats["total_violations"].(int) != 3 {
+		t.Errorf("Expected total_violations=3, got %v", stats["total_violations"])
+	}
+	
+	if stats["memory_violations"].(int) != 2 {
+		t.Errorf("Expected memory_violations=2, got %v", stats["memory_violations"])
+	}
+	
+	if stats["timeout_violations"].(int) != 1 {
+		t.Errorf("Expected timeout_violations=1, got %v", stats["timeout_violations"])
+	}
+}
+
+// TestGenerateSecurityReport tests security report generation
+func TestGenerateSecurityReport(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:           "test_plugin_012",
+		AllowedPermissions: []string{"read_save"},
+		MaxMemoryMB:        100,
+		IsActive:           true,
+	}
+	
+	sm.SetPolicy(policy)
+	
+	// Trigger some violations - convert MB to bytes
+	sm.VerifyMemoryUsage("test_plugin_012", 150*1024*1024)
+	sm.CheckPermission("test_plugin_012", "write_save")
+	
+	// Generate report
+	report := sm.GenerateSecurityReport("test_plugin_012")
+	
+	if report == "" {
+		t.Error("Generated security report is empty")
+	}
+	
+	// Report should contain key information
+	if !contains(report, "SECURITY REPORT") {
+		t.Error("Report should contain header")
+	}
+	
+	if !contains(report, "test_plugin_012") {
+		t.Error("Report should contain plugin ID")
+	}
+}
+
+// TestGetPolicies tests retrieving all policies
+func TestGetPolicies(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	// Set multiple policies
+	for i := 1; i <= 3; i++ {
+		policy := &SandboxPolicy{
+			PluginID: "plugin_" + string(rune('0'+i)),
+			IsActive: true,
+		}
+		sm.SetPolicy(policy)
+	}
+	
+	policies := sm.GetPolicies()
+	if len(policies) != 3 {
+		t.Errorf("Expected 3 policies, got %d", len(policies))
+	}
+}
+
+// TestIsolationLevels tests different isolation levels
+func TestIsolationLevels(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	// Test "none" isolation - should allow everything
+	policyNone := &SandboxPolicy{
+		PluginID:           "plugin_none",
+		AllowedPermissions: []string{},
+		DeniedPermissions:  []string{"write_save"},
+		IsolationLevel:     "none",
+		IsActive:           true,
+	}
+	sm.SetPolicy(policyNone)
+	
+	allowed, _ := sm.CheckPermission("plugin_none", "any_permission")
+	if !allowed {
+		t.Error("Isolation level 'none' should allow all permissions")
+	}
+	
+	// Test "basic" isolation - whitelist only
+	policyBasic := &SandboxPolicy{
+		PluginID:           "plugin_basic",
+		AllowedPermissions: []string{"read_save"},
+		DeniedPermissions:  []string{},
+		IsolationLevel:     "basic",
+		IsActive:           true,
+	}
+	sm.SetPolicy(policyBasic)
+	
+	allowed, _ = sm.CheckPermission("plugin_basic", "read_save")
+	if !allowed {
+		t.Error("Basic isolation should allow whitelisted permissions")
+	}
+	
+	allowed, _ = sm.CheckPermission("plugin_basic", "write_save")
+	if allowed {
+		t.Error("Basic isolation should deny non-whitelisted permissions")
+	}
+	
+	// Test "strict" isolation - blacklist enforced
+	policyStrict := &SandboxPolicy{
+		PluginID:           "plugin_strict",
+		AllowedPermissions: []string{"read_save", "write_save"},
+		DeniedPermissions:  []string{"write_save"},
+		IsolationLevel:     "strict",
+		IsActive:           true,
+	}
+	sm.SetPolicy(policyStrict)
+	
+	allowed, _ = sm.CheckPermission("plugin_strict", "write_save")
+	if allowed {
+		t.Error("Strict isolation should enforce blacklist even if whitelisted")
+	}
+}
+
+// TestConcurrentPolicyManagement tests concurrent policy operations
+func TestConcurrentPolicyManagement(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	// Set 10 policies concurrently
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			policy := &SandboxPolicy{
+				PluginID: "concurrent_plugin_" + string(rune('0'+id)),
+				IsActive: true,
+			}
+			if err := sm.SetPolicy(policy); err != nil {
+				t.Errorf("Concurrent SetPolicy failed for plugin %d: %v", id, err)
+			}
+		}(i)
+	}
+	wg.Wait()
+	
+	// Verify all policies set
+	policies := sm.GetPolicies()
+	if len(policies) != 10 {
+		t.Errorf("Expected 10 concurrent policies, got %d", len(policies))
+	}
+}
+
+// TestConcurrentViolationTracking tests concurrent violation recording
+func TestConcurrentViolationTracking(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:    "concurrent_test",
+		MaxMemoryMB: 100,
+		IsActive:    true,
+	}
+	sm.SetPolicy(policy)
+	
+	// Trigger 20 violations concurrently
+	var wg sync.WaitGroup
+	for i := 0; i < 20; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			sm.VerifyMemoryUsage("concurrent_test", 150*1024*1024)
+		}()
+	}
+	wg.Wait()
+	
+	// Verify all violations recorded
+	violations := sm.GetViolations("concurrent_test")
+	if len(violations) != 20 {
+		t.Errorf("Expected 20 concurrent violations, got %d", len(violations))
+	}
+}
+
+// TestPolicyInactive tests that inactive policies are not enforced
+func TestPolicyInactive(t *testing.T) {
+	sm := NewSandboxManager()
+	
+	policy := &SandboxPolicy{
+		PluginID:           "inactive_plugin",
+		AllowedPermissions: []string{"read_save"},
+		DeniedPermissions:  []string{"write_save"},
+		IsActive:           false, // Inactive
+	}
+	sm.SetPolicy(policy)
+	
+	// Permissions should be allowed when policy is inactive
+	allowed, _ := sm.CheckPermission("inactive_plugin", "write_save")
+	if !allowed {
+		t.Error("Inactive policy should not deny permissions")
+	}
+}

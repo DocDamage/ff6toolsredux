@@ -1,0 +1,37 @@
+{
+  "id": "auto-battle-ai-configurator",
+  "name": "Auto-Battle AI Configurator",
+  "version": "1.0.0",
+  "author": "FF6 Editor Plugin System",
+  "description": "Plan and configure custom AI battle strategies for your characters. Design conditional actions, priority systems, and optimal ability rotations (planning tool - does not modify in-game AI).",
+  "category": "experimental",
+  "tags": ["battle", "strategy", "ai", "planning", "analysis", "tool"],
+  "ff6_editor_version": "3.4.0",
+  "permissions": [
+    "read_save",
+    "ui_display"
+  ],
+  "dependencies": [],
+  "phase": 6,
+  "batch": 4,
+  "complexity": "advanced",
+  "estimated_loc": 750,
+  "features": [
+    "Conditional action system (IF-THEN rules)",
+    "Priority-based action selection",
+    "Target selection AI",
+    "MP conservation rules",
+    "Item usage policies",
+    "Ability rotation system",
+    "Boss-specific strategies",
+    "Strategy profiles (save/load)",
+    "AI performance statistics",
+    "Export configurations"
+  ],
+  "warnings": [
+    "PLANNING TOOL ONLY: Does not modify in-game AI behavior",
+    "Strategies are theoretical/planning purposes",
+    "Export strategies for manual implementation",
+    "Cannot control actual battle AI (FF6 limitation)"
+  ]
+}

@@ -1,0 +1,2 @@
+# ffvi_editor/io
+io\palette_editor.go:501:13: no new variables on left side of :=

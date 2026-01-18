@@ -1,0 +1,24 @@
+{
+  "id": "storyline-editor",
+  "name": "Storyline Editor",
+  "version": "1.0.0",
+  "author": "FF6 Plugin Team",
+  "description": "Edit FF6's storyline - modify dialogue, story events, quest objectives, story branches, character interactions, cutscene sequences, and progression flow",
+  "category": "experimental",
+  "permissions": [
+    "read_save",
+    "write_save",
+    "ui_display"
+  ],
+  "tags": [
+    "story",
+    "dialogue",
+    "events",
+    "quests",
+    "characters",
+    "narrative",
+    "experimental"
+  ],
+  "api_version": "1.0",
+  "min_editor_version": "3.4.0"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "no-level-system",
+  "name": "No Level System",
+  "version": "1.0.0",
+  "author": "FF6 Plugin Team",
+  "description": "Remove leveling mechanics entirely - fixed level mode, flat stat progression, equipment-only power scaling, experience gain disable",
+  "category": "experimental",
+  "permissions": [
+    "read_save",
+    "write_save",
+    "ui_display"
+  ],
+  "tags": [
+    "levels",
+    "progression",
+    "challenge",
+    "experience",
+    "stats",
+    "experimental"
+  ],
+  "api_version": "1.0",
+  "min_editor_version": "3.4.0"
+}

@@ -1,0 +1,76 @@
+{
+  "Characters": [
+    {
+      "current_hp": 150,
+      "level": 10,
+      "max_mp": 80,
+      "max_hp": 200,
+      "current_mp": 50,
+      "name": "Terra"
+    },
+    {
+      "current_hp": 120,
+      "level": 9,
+      "max_mp": 60,
+      "max_hp": 180,
+      "current_mp": 30,
+      "name": "Locke"
+    },
+    {
+      "current_hp": 160,
+      "level": 10,
+      "max_mp": 70,
+      "max_hp": 200,
+      "current_mp": 40,
+      "name": "Edgar"
+    },
+    {
+      "current_hp": 140,
+      "level": 10,
+      "max_mp": 65,
+      "max_hp": 190,
+      "current_mp": 35,
+      "name": "Sabin"
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+  ],
+  "UserData": {
+    "gil": 5000,
+    "playtime": 3600
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "equipment-optimizer",
+  "name": "Equipment Optimizer",
+  "version": "1.2.0",
+  "author": "FF6 Plugin Team",
+  "description": "Intelligent gear optimization with comparison dashboard (v1.1) plus Phase 11 integrations (v1.2): analytics-driven optimization, dashboards, automation hooks, import/export, and loadout guides.",
+  "category": "utility",
+  "permissions": [
+    "read_save",
+    "write_save",
+    "ui_display"
+  ],
+  "tags": [
+    "equipment",
+    "optimization",
+    "utility",
+    "comparison",
+    "visualization",
+    "stats",
+    "analytics",
+    "automation",
+    "import-export"
+  ],
+  "api_version": "1.0",
+  "min_editor_version": "3.4.0"
+}

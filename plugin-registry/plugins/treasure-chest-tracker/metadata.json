@@ -1,0 +1,13 @@
+{
+  "id": "treasure-chest-tracker",
+  "name": "Treasure Chest Tracker",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Track opened vs. unopened treasure chests across both worlds with filters, missable warnings, and exportable checklists.",
+  "permissions": ["read_save", "ui_display"],
+  "min_editor_version": "3.4.0",
+  "tags": ["treasure", "checklist", "collection", "missables"],
+  "category": "completion",
+  "api_dependencies": ["flags", "world_state"],
+  "status": "stable"
+}

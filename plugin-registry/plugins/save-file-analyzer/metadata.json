@@ -1,0 +1,20 @@
+{
+  "id": "save-file-analyzer",
+  "name": "Save File Analyzer",
+  "version": "1.0.0",
+  "author": "FF6 Editor Team",
+  "description": "Comprehensive save file statistics dashboard showing completion percentages, character details, inventory analysis, and progress tracking across all game categories.",
+  "longDescription": "A powerful read-only analysis tool that provides detailed insights into your save file. View overall completion percentage with weighted scoring, character statistics (levels, HP/MP, spells learned), party composition analysis, inventory metrics, and exportable progress reports. Perfect for completionists tracking their progress or comparing multiple playthroughs.",
+  "category": "utility",
+  "tags": ["analysis", "statistics", "completion", "progress", "tracking", "dashboard"],
+  "permissions": ["read_save", "ui_display"],
+  "apiVersion": "1.0",
+  "minEditorVersion": "3.4.0",
+  "entryPoint": "plugin.lua",
+  "homepage": "https://github.com/ff6-save-editor/plugin-registry",
+  "repository": "https://github.com/ff6-save-editor/plugin-registry",
+  "license": "MIT",
+  "dependencies": [],
+  "screenshots": ["screenshot.png"],
+  "changelog": "CHANGELOG.md"
+}

@@ -1,0 +1,38 @@
+{
+  "id": "alternate-start-generator",
+  "name": "Alternate Start Generator",
+  "description": "Start game from different points/conditions. Skip to World of Ruin, choose starting characters, set custom inventory, and create unique starting scenarios.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.0.0",
+  "permissions": ["read_save", "write_save", "ui_display"],
+  "priority": "high-experimental",
+  "category": "gameplay-altering",
+  "phase": 6,
+  "batch": 3,
+  "week": 13,
+  "tags": ["start-generator", "world-states", "scenarios", "experimental", "batch3"],
+  "dependencies": [],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release - Phase 6 Batch 3",
+        "Skip to World of Ruin option",
+        "Choose starting characters (any combination)",
+        "Start at specific story events",
+        "Custom starting inventory/levels",
+        "Scenario selection (different party configurations)",
+        "Boss rush mode (fight only bosses)",
+        "Character-specific scenarios (Celes solo, etc.)",
+        "Speedrun practice starts",
+        "Event flag manipulation",
+        "Export start configurations",
+        "Preset scenarios (6+ templates)",
+        "Custom level/stat starting points",
+        "Inventory configuration",
+        "Dangerous operations warning system"
+      ]
+    }
+  ]
+}

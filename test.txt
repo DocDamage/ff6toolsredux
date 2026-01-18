@@ -1,0 +1,87 @@
+{
+  "stats": {
+    "vigor": 255,
+    "mag_power": 255,
+    "experience": 999999,
+    "mp": 999,
+    "speed": 255,
+    "level": 50,
+    "hp": 9999,
+    "stamina": 255,
+  },
+  "tags": {
+    [1]: "optimized",
+    [2]: "endgame",
+    [3]: "max-stats",
+  },
+  "espers": {
+    "equipped": {
+      "id": 16,
+      "name": "Bahamut",
+    },
+    "available": {
+      [1]: 1,
+      [2]: 2,
+      [3]: 3,
+      [4]: 16,
+      [5]: 27,
+    },
+  },
+  "created_at": "2026-01-16 21:59:36",
+  "equipment": {
+    "relic2": {
+      "id": 30,
+      "name": "Marvel Shoes",
+    },
+    "relic1": {
+      "id": 25,
+      "name": "Ribbon",
+    },
+    "shield": {
+      "id": 52,
+      "name": "Force Shield",
+    },
+    "armor": {
+      "id": 60,
+      "name": "Minerva Bustier",
+    },
+    "helmet": {
+      "id": 40,
+      "name": "Genji Helmet",
+    },
+    "weapon": {
+      "id": 255,
+      "name": "Ultima Weapon",
+    },
+  },
+  "character": {
+    "id": 0,
+    "name": "Terra",
+  },
+  "version": "1.0",
+  "notes": "Optimized build for Terra",
+  "created_timestamp": 1768618776,
+  "magic": {
+    [1]: {
+      "id": 0,
+      "name": "Fire",
+      "learned": true,
+    },
+    [2]: {
+      "id": 1,
+      "name": "Ice",
+      "learned": true,
+    },
+    [3]: {
+      "id": 2,
+      "name": "Bolt",
+      "learned": true,
+    },
+    [4]: {
+      "id": 54,
+      "name": "Ultima",
+      "learned": true,
+    },
+  },
+  "plugin_version": "1.0.0",
+}

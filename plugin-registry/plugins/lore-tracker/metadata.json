@@ -1,0 +1,20 @@
+{
+  "id": "lore-tracker",
+  "name": "Strago's Lore Tracker",
+  "version": "1.0.0",
+  "author": "FF6 Editor Team",
+  "contact": "https://github.com/ff6-save-editor",
+  "description": "Track Strago's 24 Blue Magic spells (Lores) with enemy sources, locations, and missable indicators",
+  "longDescription": "The Lore Tracker plugin provides comprehensive tracking of all 24 Blue Magic spells (Lores) that Strago can learn throughout the game. View which Lores you've learned, discover which enemies can teach each Lore, find out where those enemies are located, and identify which Lores are missable in the World of Balance. Features include a complete checklist of all 24 Lores, detailed enemy source information for each spell, location guides with area names, boss vs. regular enemy indicators, missable Lore warnings, and overall completion percentage tracking. Perfect for completionists who want to ensure they don't miss any of Strago's unique abilities.",
+  "category": "tracker",
+  "tags": ["lore", "strago", "blue magic", "tracker", "collection", "completionist", "spells"],
+  "permissions": ["read_save", "ui_display"],
+  "minEditorVersion": "3.4.0",
+  "homepage": "https://github.com/ff6-save-editor/plugin-registry/tree/main/plugins/lore-tracker",
+  "repository": "https://github.com/ff6-save-editor/plugin-registry",
+  "license": "MIT",
+  "dependencies": [],
+  "screenshots": [],
+  "documentation": "README.md",
+  "changelog": "CHANGELOG.md"
+}

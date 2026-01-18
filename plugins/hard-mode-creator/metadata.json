@@ -1,0 +1,31 @@
+{
+  "id": "hard-mode-creator",
+  "name": "Hard Mode Creator",
+  "description": "Create custom difficulty modifiers with enemy stat multipliers, player handicaps, and item restrictions.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.0.0",
+  "permissions": ["read_save", "write_save", "ui_display"],
+  "priority": "high-experimental",
+  "category": "gameplay-altering",
+  "phase": 6,
+  "week": 12,
+  "tags": ["difficulty", "hard-mode", "challenge", "modifiers"],
+  "dependencies": [],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release",
+        "Enemy stat multipliers (HP/MP/Attack/Defense/Magic)",
+        "Player stat divisors (handicap mode)",
+        "Experience gain rate modification",
+        "Gil rate modification",
+        "Item use restrictions",
+        "Equipment slot restrictions",
+        "Difficulty presets (Iron Man, Nuzlocke-style)",
+        "Export difficulty profiles"
+      ]
+    }
+  ]
+}

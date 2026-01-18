@@ -1,0 +1,13 @@
+{
+  "id": "world-of-balance-checklist",
+  "name": "World of Balance Checklist",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Completion tracker for the World of Balance: recruitment, espers, missables, event flags, and point-of-no-return warnings.",
+  "permissions": ["read_save", "ui_display"],
+  "min_editor_version": "3.4.0",
+  "tags": ["checklist", "collection", "missables", "reference"],
+  "category": "completion",
+  "api_dependencies": ["character", "inventory", "espers", "flags"],
+  "status": "stable"
+}

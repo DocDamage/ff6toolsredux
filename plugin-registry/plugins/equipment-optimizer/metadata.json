@@ -1,0 +1,20 @@
+{
+  "id": "equipment-optimizer",
+  "name": "Equipment Optimizer",
+  "version": "1.0.0",
+  "author": "FF6 Editor Team",
+  "description": "Analyzes available equipment and recommends optimal loadouts for characters based on configurable optimization goals (attack, defense, magic, speed, balanced).",
+  "longDescription": "A comprehensive equipment optimization tool that analyzes your inventory, evaluates all available equipment options, and recommends the best loadout for each character based on your selected optimization goal. Features stat comparison, before/after previews, party-wide optimization, and equipment comparison tool to help you make informed gearing decisions.",
+  "category": "utility",
+  "tags": ["equipment", "optimization", "gear", "stats", "loadout", "party"],
+  "permissions": ["read_save", "write_save", "ui_display"],
+  "apiVersion": "1.0",
+  "minEditorVersion": "3.4.0",
+  "entryPoint": "plugin.lua",
+  "homepage": "https://github.com/ff6-save-editor/plugin-registry",
+  "repository": "https://github.com/ff6-save-editor/plugin-registry",
+  "license": "MIT",
+  "dependencies": [],
+  "screenshots": ["screenshot.png"],
+  "changelog": "CHANGELOG.md"
+}

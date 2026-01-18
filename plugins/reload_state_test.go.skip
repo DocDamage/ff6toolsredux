@@ -1,0 +1,402 @@
+package plugins
+
+import (
+	"testing"
+)
+
+func TestPluginState_Serialize(t *testing.T) {
+	state := &PluginState{
+		ID:      "test-plugin",
+		Name:    "Test Plugin",
+		Version: "1.0.0",
+		Enabled: true,
+		Hooks:   []string{"onLoad", "onUnload"},
+		Settings: map[string]interface{}{
+			"option1": "value1",
+			"option2": 42,
+		},
+	}
+
+	data, err := state.Serialize()
+	if err != nil {
+		t.Fatalf("Failed to serialize state: %v", err)
+	}
+
+	if len(data) == 0 {
+		t.Error("Serialized data should not be empty")
+	}
+}
+
+func TestPluginState_Deserialize(t *testing.T) {
+	original := &PluginState{
+		ID:      "test-plugin",
+		Name:    "Test Plugin",
+		Version: "1.0.0",
+		Enabled: true,
+		Hooks:   []string{"onLoad", "onUnload"},
+		Settings: map[string]interface{}{
+			"option1": "value1",
+			"option2": float64(42), // JSON numbers are float64
+		},
+	}
+
+	data, err := original.Serialize()
+	if err != nil {
+		t.Fatalf("Failed to serialize state: %v", err)
+	}
+
+	restored := &PluginState{}
+	if err := restored.Deserialize(data); err != nil {
+		t.Fatalf("Failed to deserialize state: %v", err)
+	}
+
+	if restored.ID != original.ID {
+		t.Errorf("Expected ID %s, got %s", original.ID, restored.ID)
+	}
+
+	if restored.Name != original.Name {
+		t.Errorf("Expected Name %s, got %s", original.Name, restored.Name)
+	}
+
+	if restored.Version != original.Version {
+		t.Errorf("Expected Version %s, got %s", original.Version, restored.Version)
+	}
+
+	if restored.Enabled != original.Enabled {
+		t.Errorf("Expected Enabled %v, got %v", original.Enabled, restored.Enabled)
+	}
+
+	if len(restored.Hooks) != len(original.Hooks) {
+		t.Errorf("Expected %d hooks, got %d", len(original.Hooks), len(restored.Hooks))
+	}
+
+	if len(restored.Settings) != len(original.Settings) {
+		t.Errorf("Expected %d settings, got %d", len(original.Settings), len(restored.Settings))
+	}
+}
+
+func TestPluginState_Validate(t *testing.T) {
+	tests := []struct {
+		name    string
+		state   *PluginState
+		wantErr bool
+	}{
+		{
+			name: "valid state",
+			state: &PluginState{
+				ID:      "test-plugin",
+				Name:    "Test Plugin",
+				Version: "1.0.0",
+			},
+			wantErr: false,
+		},
+		{
+			name: "missing ID",
+			state: &PluginState{
+				Name:    "Test Plugin",
+				Version: "1.0.0",
+			},
+			wantErr: true,
+		},
+		{
+			name: "missing Name",
+			state: &PluginState{
+				ID:      "test-plugin",
+				Version: "1.0.0",
+			},
+			wantErr: true,
+		},
+		{
+			name: "missing Version",
+			state: &PluginState{
+				ID:   "test-plugin",
+				Name: "Test Plugin",
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.state.Validate()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestPluginState_Clone(t *testing.T) {
+	original := &PluginState{
+		ID:      "test-plugin",
+		Name:    "Test Plugin",
+		Version: "1.0.0",
+		Enabled: true,
+		Hooks:   []string{"onLoad", "onUnload"},
+		Settings: map[string]interface{}{
+			"option1": "value1",
+			"option2": 42,
+		},
+	}
+
+	cloned := original.Clone()
+
+	// Verify deep copy
+	if cloned.ID != original.ID {
+		t.Error("Clone should have same ID")
+	}
+
+	// Modify clone and verify original unchanged
+	cloned.Enabled = false
+	cloned.Settings["option1"] = "modified"
+
+	if original.Enabled == false {
+		t.Error("Modifying clone should not affect original")
+	}
+
+	if original.Settings["option1"] == "modified" {
+		t.Error("Modifying clone settings should not affect original")
+	}
+}
+
+func TestPluginState_Diff(t *testing.T) {
+	state1 := &PluginState{
+		ID:      "test-plugin",
+		Name:    "Test Plugin",
+		Version: "1.0.0",
+		Enabled: true,
+		Settings: map[string]interface{}{
+			"option1": "value1",
+			"option2": 42,
+		},
+	}
+
+	state2 := &PluginState{
+		ID:      "test-plugin",
+		Name:    "Test Plugin",
+		Version: "2.0.0",
+		Enabled: false,
+		Settings: map[string]interface{}{
+			"option1": "value2",
+			"option3": "new",
+		},
+	}
+
+	diff := state1.Diff(state2)
+
+	if !diff.VersionChanged {
+		t.Error("VersionChanged should be true")
+	}
+
+	if !diff.EnabledChanged {
+		t.Error("EnabledChanged should be true")
+	}
+
+	if len(diff.SettingsChanged) == 0 {
+		t.Error("SettingsChanged should not be empty")
+	}
+}
+
+func TestPluginState_Merge(t *testing.T) {
+	base := &PluginState{
+		ID:      "test-plugin",
+		Name:    "Test Plugin",
+		Version: "1.0.0",
+		Enabled: true,
+		Settings: map[string]interface{}{
+			"option1": "value1",
+			"option2": 42,
+		},
+	}
+
+	diff := &StateDiff{
+		VersionChanged: true,
+		NewVersion:     "2.0.0",
+		EnabledChanged: true,
+		NewEnabled:     false,
+		SettingsChanged: map[string]interface{}{
+			"option1": "updated",
+			"option3": "new",
+		},
+	}
+
+	merged := base.Merge(diff)
+
+	if merged.Version != "2.0.0" {
+		t.Errorf("Expected version 2.0.0, got %s", merged.Version)
+	}
+
+	if merged.Enabled != false {
+		t.Error("Expected enabled to be false")
+	}
+
+	if merged.Settings["option1"] != "updated" {
+		t.Errorf("Expected option1 to be 'updated', got %v", merged.Settings["option1"])
+	}
+
+	if merged.Settings["option2"] != 42 {
+		t.Errorf("Expected option2 to be preserved as 42, got %v", merged.Settings["option2"])
+	}
+
+	if merged.Settings["option3"] != "new" {
+		t.Errorf("Expected option3 to be 'new', got %v", merged.Settings["option3"])
+	}
+}
+
+func TestStateSnapshot_Creation(t *testing.T) {
+	states := map[string]*PluginState{
+		"plugin1": {
+			ID:      "plugin1",
+			Name:    "Plugin 1",
+			Version: "1.0.0",
+		},
+		"plugin2": {
+			ID:      "plugin2",
+			Name:    "Plugin 2",
+			Version: "2.0.0",
+		},
+	}
+
+	snapshot := NewStateSnapshot(states)
+
+	if len(snapshot.States) != 2 {
+		t.Errorf("Expected 2 states, got %d", len(snapshot.States))
+	}
+
+	if snapshot.Timestamp.IsZero() {
+		t.Error("Timestamp should be set")
+	}
+}
+
+func TestStateSnapshot_GetState(t *testing.T) {
+	states := map[string]*PluginState{
+		"plugin1": {
+			ID:      "plugin1",
+			Name:    "Plugin 1",
+			Version: "1.0.0",
+		},
+	}
+
+	snapshot := NewStateSnapshot(states)
+
+	state, exists := snapshot.GetState("plugin1")
+	if !exists {
+		t.Error("State should exist")
+	}
+
+	if state.ID != "plugin1" {
+		t.Errorf("Expected ID plugin1, got %s", state.ID)
+	}
+
+	_, exists = snapshot.GetState("nonexistent")
+	if exists {
+		t.Error("Nonexistent state should not exist")
+	}
+}
+
+func TestStateSnapshot_Clone(t *testing.T) {
+	states := map[string]*PluginState{
+		"plugin1": {
+			ID:      "plugin1",
+			Name:    "Plugin 1",
+			Version: "1.0.0",
+			Settings: map[string]interface{}{
+				"option1": "value1",
+			},
+		},
+	}
+
+	original := NewStateSnapshot(states)
+	cloned := original.Clone()
+
+	// Verify deep copy
+	if len(cloned.States) != len(original.States) {
+		t.Error("Clone should have same number of states")
+	}
+
+	// Modify clone and verify original unchanged
+	cloned.States["plugin1"].Version = "2.0.0"
+
+	if original.States["plugin1"].Version != "1.0.0" {
+		t.Error("Modifying clone should not affect original")
+	}
+}
+
+func TestStateSnapshot_Diff(t *testing.T) {
+	snapshot1 := NewStateSnapshot(map[string]*PluginState{
+		"plugin1": {
+			ID:      "plugin1",
+			Version: "1.0.0",
+			Enabled: true,
+		},
+		"plugin2": {
+			ID:      "plugin2",
+			Version: "1.0.0",
+		},
+	})
+
+	snapshot2 := NewStateSnapshot(map[string]*PluginState{
+		"plugin1": {
+			ID:      "plugin1",
+			Version: "2.0.0",
+			Enabled: false,
+		},
+		"plugin3": {
+			ID:      "plugin3",
+			Version: "1.0.0",
+		},
+	})
+
+	diff := snapshot1.Diff(snapshot2)
+
+	if len(diff) == 0 {
+		t.Error("Diff should not be empty")
+	}
+
+	plugin1Diff, exists := diff["plugin1"]
+	if !exists {
+		t.Error("plugin1 diff should exist")
+	}
+
+	if !plugin1Diff.VersionChanged {
+		t.Error("plugin1 version should be changed")
+	}
+
+	if !plugin1Diff.EnabledChanged {
+		t.Error("plugin1 enabled should be changed")
+	}
+}
+
+func TestStateSnapshot_Apply(t *testing.T) {
+	snapshot := NewStateSnapshot(map[string]*PluginState{
+		"plugin1": {
+			ID:      "plugin1",
+			Version: "1.0.0",
+			Enabled: true,
+		},
+	})
+
+	diff := map[string]*StateDiff{
+		"plugin1": {
+			VersionChanged: true,
+			NewVersion:     "2.0.0",
+			EnabledChanged: true,
+			NewEnabled:     false,
+		},
+	}
+
+	updated := snapshot.Apply(diff)
+
+	state, exists := updated.GetState("plugin1")
+	if !exists {
+		t.Fatal("plugin1 should exist in updated snapshot")
+	}
+
+	if state.Version != "2.0.0" {
+		t.Errorf("Expected version 2.0.0, got %s", state.Version)
+	}
+
+	if state.Enabled != false {
+		t.Error("Expected enabled to be false")
+	}
+}

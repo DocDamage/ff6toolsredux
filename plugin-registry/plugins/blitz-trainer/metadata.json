@@ -1,0 +1,20 @@
+{
+  "id": "blitz-trainer",
+  "name": "Sabin's Blitz Input Trainer",
+  "version": "1.0.0",
+  "author": "FF6 Editor Team",
+  "contact": "https://github.com/ff6-save-editor",
+  "description": "Interactive reference and training guide for Sabin's 8 Blitz command inputs with visual diagrams",
+  "longDescription": "The Blitz Input Trainer plugin provides a comprehensive reference and practice guide for all 8 of Sabin's Blitz techniques. Blitzes are special moves executed by entering directional button sequences, and this plugin helps you master each one. Features include complete input sequence listings with visual direction arrows, Blitz effect descriptions and damage formulas, input difficulty ratings, quick reference card view, damage calculators based on Sabin's current stats, success rate tracking for practice, and detailed strategic recommendations for each Blitz. Perfect for players learning the Blitz system or wanting a quick reference guide without leaving the editor.",
+  "category": "reference",
+  "tags": ["blitz", "sabin", "reference", "trainer", "commands", "inputs", "guide"],
+  "permissions": ["read_save", "ui_display"],
+  "minEditorVersion": "3.4.0",
+  "homepage": "https://github.com/ff6-save-editor/plugin-registry/tree/main/plugins/blitz-trainer",
+  "repository": "https://github.com/ff6-save-editor/plugin-registry",
+  "license": "MIT",
+  "dependencies": [],
+  "screenshots": [],
+  "documentation": "README.md",
+  "changelog": "CHANGELOG.md"
+}

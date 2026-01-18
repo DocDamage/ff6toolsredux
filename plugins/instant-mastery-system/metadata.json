@@ -1,0 +1,37 @@
+{
+  "id": "instant-mastery-system",
+  "name": "Instant Mastery System",
+  "description": "Sandbox mode - unlock everything instantly. Max all stats, learn all abilities, unlock all items, and complete all quests.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.0.0",
+  "permissions": ["read_save", "write_save", "ui_display"],
+  "priority": "high-experimental",
+  "category": "gameplay-altering",
+  "phase": 6,
+  "batch": 3,
+  "week": 13,
+  "tags": ["sandbox", "mastery", "unlock", "experimental", "batch3"],
+  "dependencies": [],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release - Phase 6 Batch 3",
+        "Unlock all spells for all characters (instant mastery)",
+        "Learn all Rages/Lores/Dances/Blitzes",
+        "Max all character levels (99)",
+        "Max all character stats",
+        "Complete equipment collection",
+        "Full item inventory (99 of everything)",
+        "All espers obtained",
+        "Max Gil (9,999,999)",
+        "Undo/restore original save",
+        "Selective mastery (choose categories)",
+        "One-click full mastery",
+        "Safety confirmation dialogs",
+        "Save state before modification"
+      ]
+    }
+  ]
+}

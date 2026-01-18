@@ -1,0 +1,82 @@
+
+======================================================================
+DATABASE PERSISTENCE LAYER v1.2.0 - PHASE 11 SMOKE TESTS
+======================================================================
+
+[Database Layer] INIT: Database persistence layer initialized
+[Database Layer] v1.2.0 loaded: Tier 1 persistence + Phase 11 integrations ready
+
+>>> CORE PERSISTENCE TESTS (5 tests)
+
+[Database Layer] SAVE: Persisted test_key (15 bytes)
+  Γ£ô savePersistentData stores data with timestamp
+[Database Layer] SAVE: Persisted load_test (15 bytes)
+[Database Layer] LOAD: Retrieved load_test (saved 0 seconds ago)
+  Γ£ô loadPersistentData retrieves stored data
+[Database Layer] SAVE: Persisted clear_test (15 bytes)
+[Database Layer] CLEAR: Cleared clear_test
+  Γ£ô clearDatabaseEntry removes entries
+[Database Layer] SAVE: Persisted key1 (15 bytes)
+[Database Layer] SAVE: Persisted key2 (15 bytes)
+  Γ£ô listDatabaseKeys returns all stored keys
+  Γ£ù init function creates database schema: ...ins/database-persistence-layer/dpl_phase11_smoke.lua:192: attempt to call field 'init' (a nil value)
+
+>>> TIER 1 DATA PERSISTENCE TESTS (6 tests)
+
+[Database Layer] SAVE: Persisted character_roster_v1 (15 bytes)
+[Database Layer] SAVE_ROSTER: Character roster persisted, version 1
+  Γ£ô saveCharacterRosterState persists roster with versioning
+[Database Layer] SAVE: Persisted character_roster_v2 (15 bytes)
+[Database Layer] SAVE_ROSTER: Character roster persisted, version 2
+[Database Layer] LOAD: Retrieved character_roster (saved 0 seconds ago)
+  Γ£ô loadCharacterRosterState retrieves persisted roster
+[Database Layer] SAVE: Persisted equipment_sets_v1 (15 bytes)
+[Database Layer] SAVE_EQUIPMENT: Equipment config persisted, version 1
+  Γ£ô saveEquipmentConfig persists with versioning
+[Database Layer] SAVE: Persisted equipment_sets_v2 (15 bytes)
+[Database Layer] SAVE_EQUIPMENT: Equipment config persisted, version 2
+  Γ£ô loadEquipmentConfig retrieves persisted equipment
+[Database Layer] SAVE: Persisted party_configs_v1 (15 bytes)
+[Database Layer] SAVE_PARTY: Party config persisted, version 1
+  Γ£ô savePartyConfig persists with versioning
+[Database Layer] SAVE: Persisted party_configs_v2 (15 bytes)
+[Database Layer] SAVE_PARTY: Party config persisted, version 2
+  Γ£ô loadPartyConfig retrieves persisted party
+
+>>> PHASE 11 INTEGRATION TESTS (9 tests)
+
+[Database Layer] SAVE: Persisted character_roster_v3 (15 bytes)
+[Database Layer] SAVE_ROSTER: Character roster persisted, version 3
+[Database Layer] SAVE: Persisted equipment_sets_v3 (15 bytes)
+[Database Layer] SAVE_EQUIPMENT: Equipment config persisted, version 3
+[Database Layer] SAVE: Persisted party_configs_v3 (15 bytes)
+[Database Layer] SAVE_PARTY: Party config persisted, version 3
+  Γ£ù syncTier1DataToHub broadcasts via Integration Hub: ...ins/database-persistence-layer/dpl_phase11_smoke.lua:252: Should sync to hub
+  Γ£ù registerDatabaseAsMasterReference registers in Integration Hub: ...ins/database-persistence-layer/dpl_phase11_smoke.lua:257: Should register as master ref
+[Database Layer] SAVE: Persisted snapshot_test_data (15 bytes)
+[Database Layer] LOAD: Retrieved character_roster (saved 0 seconds ago)
+[Database Layer] SAVE: Persisted snapshot_test_snapshot (15 bytes)
+  Γ£ô createDatabaseSnapshot creates versioned snapshot
+[Database Layer] LOAD: Retrieved character_roster (saved 0 seconds ago)
+[Database Layer] SAVE: Persisted snapshot_restore_test (15 bytes)
+  Γ£ù restoreDatabaseFromSnapshot restores from backup: ...ins/database-persistence-layer/dpl_phase11_smoke.lua:271: Should restore snapshot
+[Database Layer] SAVE: Persisted character_roster_v4 (15 bytes)
+[Database Layer] SAVE_ROSTER: Character roster persisted, version 4
+[Database Layer] SAVE: Persisted equipment_sets_v4 (15 bytes)
+[Database Layer] SAVE_EQUIPMENT: Equipment config persisted, version 4
+[Database Layer] SAVE: Persisted party_configs_v4 (15 bytes)
+[Database Layer] SAVE_PARTY: Party config persisted, version 4
+[Database Layer] HEALTH: Database health analyzed
+  Γ£ô analyzeDatabaseHealth generates health metrics
+[Database Layer] SAVE: Persisted export_test (15 bytes)
+[Database Layer] LOAD: Retrieved character_roster (saved 0 seconds ago)
+  Γ£ù exportDatabaseForSharing exports in JSON/CSV/XML: ...ins/database-persistence-layer/dpl_phase11_smoke.lua:287: Should export database
+  Γ£ô importDatabaseFromExternal imports external data
+  Γ£ù registerDatabaseAPI registers REST endpoints: ...ins/database-persistence-layer/dpl_phase11_smoke.lua:298: Should register API endpoints
+  Γ£ô load_phase11 safely loads all dependencies
+
+======================================================================
+RESULTS: 14 passed, 6 failed (70.0% pass rate)
+======================================================================
+
+Γ£ù 6 test(s) failed - review output above

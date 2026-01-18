@@ -1,0 +1,31 @@
+{
+  "id": "character-class-system",
+  "name": "Character Class System",
+  "description": "Convert FF6 into a class-based RPG system with 10+ custom class definitions, equipment restrictions, and stat modifiers.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.0.0",
+  "permissions": ["read_save", "write_save", "ui_display"],
+  "priority": "high-experimental",
+  "category": "gameplay-altering",
+  "phase": 6,
+  "week": 11,
+  "tags": ["classes", "jobs", "transformation", "experimental"],
+  "dependencies": ["character-ability-swap"],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release",
+        "10+ custom class definitions",
+        "Class assignment system",
+        "Class-specific equipment restrictions",
+        "Class-based stat modifiers",
+        "Job change system",
+        "Hybrid/multi-class support",
+        "Class progression tracking",
+        "Export configurations"
+      ]
+    }
+  ]
+}
