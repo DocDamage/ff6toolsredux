@@ -823,6 +823,7 @@ func (g *gui) Load() {
 	}
 	g.open.Disabled = true
 	g.canvas.RemoveAll()
+	g.window.Canvas().Refresh()
 	g.canvas.Add(
 		forms.NewFileIO(forms.Load, g.window, config.SaveDir(), func(name, dir, file string, _ int, saveType global.SaveFileType) {
 			defer func() { g.open.Disabled = false }()
@@ -858,6 +859,7 @@ func (g *gui) Load() {
 					}
 				})
 				g.canvas.Add(ed)
+				g.window.Canvas().Refresh()
 			}
 		}, func() {
 			defer func() { g.open.Disabled = false }()
@@ -865,6 +867,7 @@ func (g *gui) Load() {
 			if g.prev != nil {
 				g.canvas.RemoveAll()
 				g.canvas.Add(g.prev)
+				g.window.Canvas().Refresh()
 			}
 		}))
 }
@@ -876,6 +879,7 @@ func (g *gui) Save() {
 	g.open.Disabled = true
 	g.save.Disabled = true
 	g.canvas.RemoveAll()
+	g.window.Canvas().Refresh()
 	g.canvas.Add(
 		forms.NewFileIO(forms.Save, g.window, config.SaveDir(), func(name, dir, file string, slot int, saveType global.SaveFileType) {
 			defer func() {
@@ -893,6 +897,7 @@ func (g *gui) Save() {
 					if g.prev != nil {
 						g.canvas.RemoveAll()
 						g.canvas.Add(g.prev)
+						g.window.Canvas().Refresh()
 					}
 					dialog.NewError(err, g.window).Show()
 				} else {
@@ -900,6 +905,7 @@ func (g *gui) Save() {
 					if g.prev != nil {
 						g.canvas.RemoveAll()
 						g.canvas.Add(g.prev)
+						g.window.Canvas().Refresh()
 					}
 				}
 			}
@@ -934,6 +940,7 @@ func (g *gui) Save() {
 			if g.prev != nil {
 				g.canvas.RemoveAll()
 				g.canvas.Add(g.prev)
+				g.window.Canvas().Refresh()
 			}
 		}))
 }
@@ -975,7 +982,9 @@ func (g *gui) showWelcomeScreen() {
 
 	// Quick action buttons with icons
 	openBtn := widget.NewButtonWithIcon("Open Save File", theme.FolderOpenIcon(), func() {
+		g.canvas.RemoveAll()
 		g.Load()
+		g.window.Canvas().Refresh()
 	})
 	openBtn.Importance = widget.HighImportance
 
