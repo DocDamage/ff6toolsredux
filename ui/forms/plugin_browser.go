@@ -69,6 +69,13 @@ func NewPluginBrowserDialog(w fyne.Window, mgr *plugins.Manager, marketplaceClie
 
 // Show displays the plugin browser dialog
 func (d *PluginBrowserDialog) Show() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Error opening plugin browser: %v\n", r)
+			dialog.ShowError(fmt.Errorf("plugin browser error: %v", r), d.window)
+		}
+	}()
+
 	// Build UI components FIRST before any goroutines
 	header := d.buildHeader()
 	content := d.buildContent()
@@ -234,29 +241,38 @@ func (d *PluginBrowserDialog) createPluginListItem() fyne.CanvasObject {
 
 // updatePluginListItem updates a plugin list item with actual data
 func (d *PluginBrowserDialog) updatePluginListItem(item fyne.CanvasObject, plugin marketplace.RemotePlugin) {
-	container := item.(*fyne.Container)
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Warning: Failed to update plugin list item: %v\n", r)
+		}
+	}()
+
+	container, ok := item.(*fyne.Container)
+	if !ok || container == nil {
+		return
+	}
 	if len(container.Objects) < 4 {
 		return
 	}
 
-	nameLabel := container.Objects[0].(*widget.Label)
-	authorLabel := container.Objects[1].(*widget.Label)
-	bottomRow := container.Objects[2].(*fyne.Container)
+	if nameLabel, ok := container.Objects[0].(*widget.Label); ok {
+		nameLabel.SetText(plugin.Name)
+	}
+	if authorLabel, ok := container.Objects[1].(*widget.Label); ok {
+		authorLabel.SetText(fmt.Sprintf("by %s", plugin.Author))
+	}
 
-	nameLabel.SetText(plugin.Name)
-	authorLabel.SetText(fmt.Sprintf("by %s", plugin.Author))
-
-	if len(bottomRow.Objects) >= 3 {
-		versionLabel := bottomRow.Objects[0].(*widget.Label)
-		downloadsLabel := bottomRow.Objects[2].(*widget.Label)
-
-		versionLabel.SetText(fmt.Sprintf("v%s", plugin.Version))
-
-		// Format rating with stars
-		stars := strings.Repeat("★", int(plugin.Rating))
-		stars += strings.Repeat("☆", 5-int(plugin.Rating))
-		downloadsLabel.SetText(fmt.Sprintf("%s %.1f • %s downloads",
-			stars, plugin.Rating, formatNumber(plugin.Downloads)))
+	if bottomRow, ok := container.Objects[2].(*fyne.Container); ok && len(bottomRow.Objects) >= 3 {
+		if versionLabel, ok := bottomRow.Objects[0].(*widget.Label); ok {
+			versionLabel.SetText(fmt.Sprintf("v%s", plugin.Version))
+		}
+		if downloadsLabel, ok := bottomRow.Objects[2].(*widget.Label); ok {
+			// Format rating with stars
+			stars := strings.Repeat("★", int(plugin.Rating))
+			stars += strings.Repeat("☆", 5-int(plugin.Rating))
+			downloadsLabel.SetText(fmt.Sprintf("%s %.1f • %s downloads",
+				stars, plugin.Rating, formatNumber(plugin.Downloads)))
+		}
 	}
 }
 
@@ -271,8 +287,12 @@ func (d *PluginBrowserDialog) displayPluginDetails(plugin *marketplace.RemotePlu
 	}
 
 	// Check if plugin is already installed
-	installed, _ := d.registry.GetPlugin(plugin.ID)
-	isInstalled := installed != nil
+	var installed *marketplace.InstallRecord
+	isInstalled := false
+	if d.registry != nil {
+		installed, _ = d.registry.GetPlugin(plugin.ID)
+		isInstalled = installed != nil
+	}
 
 	// Plugin header
 	titleLabel := widget.NewLabelWithStyle(plugin.Name, fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
@@ -392,6 +412,13 @@ func (d *PluginBrowserDialog) displayPluginDetails(plugin *marketplace.RemotePlu
 
 // refreshPluginList fetches the latest plugin list from the marketplace
 func (d *PluginBrowserDialog) refreshPluginList() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Error refreshing plugin list: %v\n", r)
+			d.setStatus(fmt.Sprintf("Error: %v", r))
+		}
+	}()
+
 	// Safety check
 	if d.marketplace == nil {
 		d.setStatus("Error: Marketplace client not available")
