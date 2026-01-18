@@ -76,6 +76,8 @@ func (w *FileIO) dirChange(s string) {
 	}
 	if d, err = os.ReadDir(s); err != nil {
 		w.buttons.RemoveAll()
+		w.buttons.Refresh()
+		return
 	}
 	for _, f := range d {
 		if !f.IsDir() {
@@ -105,6 +107,7 @@ func (w *FileIO) dirChange(s string) {
 				}(name, key, save.Slot)
 			}
 		}
+		w.buttons.Refresh()
 	}
 }
 

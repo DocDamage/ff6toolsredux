@@ -32,6 +32,7 @@ func NewCharacters() *Characters {
 			container.NewTabItem("Equipment", editors.NewEquipment(c)),
 			container.NewTabItem("Commands", editors.NewCommands(c)),
 		))
+		s.middle.Refresh()
 	})))
 	return s
 }

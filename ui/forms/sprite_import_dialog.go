@@ -265,6 +265,7 @@ func (s *SpriteImportDialog) updatePreview() {
 	s.previewContainer.RemoveAll()
 	s.previewContainer.Add(s.previewLabel)
 	s.previewContainer.Add(s.previewImage)
+	s.previewContainer.Refresh()
 
 	s.statusLabel.SetText("Ready to import")
 }

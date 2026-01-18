@@ -510,6 +510,7 @@ func (p *PluginManagerDialog) buildPluginOutputTab() *fyne.Container {
 			p.pluginManager.ClearExecutionLog()
 			logContent.RemoveAll()
 			logContent.Add(widget.NewLabel("Log cleared"))
+			logContent.Refresh()
 		}),
 		widget.NewButton("Export Log", func() {
 			dialog.ShowInformation("Coming Soon", "Log export feature coming soon", p.window)

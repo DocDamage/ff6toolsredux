@@ -818,7 +818,7 @@ func (g *gui) Load() {
 	g.savePreviousCanvas()
 	g.open.Disabled = true
 	g.canvas.RemoveAll()
-	g.window.Canvas().Refresh()
+	g.canvas.Refresh()
 	g.canvas.Add(
 		forms.NewFileIO(forms.Load, g.window, config.SaveDir(), func(name, dir, file string, _ int, saveType global.SaveFileType) {
 			defer func() { g.open.Disabled = false }()
@@ -863,7 +863,7 @@ func (g *gui) Save() {
 	g.open.Disabled = true
 	g.save.Disabled = true
 	g.canvas.RemoveAll()
-	g.window.Canvas().Refresh()
+	g.canvas.Refresh()
 	g.canvas.Add(
 		forms.NewFileIO(forms.Save, g.window, config.SaveDir(), func(name, dir, file string, slot int, saveType global.SaveFileType) {
 			defer func() {
@@ -925,7 +925,7 @@ func (g *gui) Run() {
 func (g *gui) setCanvasContent(obj fyne.CanvasObject) {
 	g.canvas.RemoveAll()
 	g.canvas.Add(obj)
-	g.window.Canvas().Refresh()
+	g.canvas.Refresh()
 }
 
 // restorePreviousCanvas restores the previous canvas content and refreshes
@@ -933,7 +933,7 @@ func (g *gui) restorePreviousCanvas() {
 	if g.prev != nil {
 		g.canvas.RemoveAll()
 		g.canvas.Add(g.prev)
-		g.window.Canvas().Refresh()
+		g.canvas.Refresh()
 	}
 }
 
