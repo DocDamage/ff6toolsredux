@@ -659,17 +659,14 @@ func New() Gui {
 			fyne.NewMenuItem("Validation Panel", func() {
 				if g.pr != nil {
 					// Show validation panel in main canvas
-					if len(g.canvas.Objects) > 0 {
-						g.prev = g.canvas.Objects[0]
-					}
-					g.canvas.RemoveAll()
+					g.savePreviousCanvas()
 					validator := validation.NewValidator()
 					// Update status bar with latest counts
 					res := validator.Validate(g.pr)
 					g.validationStatus.SetText(fmt.Sprintf("Validation: %d errors, %d warnings", len(res.Errors), len(res.Warnings)))
 					panel := forms.NewValidationPanel(validator)
 					panel.ValidateSaveData(g.pr)
-					g.canvas.Add(panel.BuildPanel())
+					g.setCanvasContent(panel.BuildPanel())
 				} else {
 					dialog.ShowError(fmt.Errorf("no save file loaded"), g.window)
 				}
@@ -818,9 +815,7 @@ func (g *gui) Canvas() *fyne.Container {
 }
 
 func (g *gui) Load() {
-	if len(g.canvas.Objects) > 0 {
-		g.prev = g.canvas.Objects[0]
-	}
+	g.savePreviousCanvas()
 	g.open.Disabled = true
 	g.canvas.RemoveAll()
 	g.window.Canvas().Refresh()
@@ -831,14 +826,10 @@ func (g *gui) Load() {
 			config.SetSaveDir(dir)
 			p := pr.New()
 			if err := p.Load(filepath.Join(dir, file), saveType); err != nil {
-				if g.prev != nil {
-					g.canvas.RemoveAll()
-					g.canvas.Add(g.prev)
-				}
+				g.restorePreviousCanvas()
 				dialog.NewError(err, g.window).Show()
 			} else {
 				// Success
-				g.canvas.RemoveAll()
 				g.prev = nil
 				g.save.Disabled = false
 				g.pr = p
@@ -858,24 +849,17 @@ func (g *gui) Load() {
 						}
 					}
 				})
-				g.canvas.Add(ed)
-				g.window.Canvas().Refresh()
+				g.setCanvasContent(ed)
 			}
 		}, func() {
 			defer func() { g.open.Disabled = false }()
 			// Cancel
-			if g.prev != nil {
-				g.canvas.RemoveAll()
-				g.canvas.Add(g.prev)
-				g.window.Canvas().Refresh()
-			}
+			g.restorePreviousCanvas()
 		}))
 }
 
 func (g *gui) Save() {
-	if len(g.canvas.Objects) > 0 {
-		g.prev = g.canvas.Objects[0]
-	}
+	g.savePreviousCanvas()
 	g.open.Disabled = true
 	g.save.Disabled = true
 	g.canvas.RemoveAll()
@@ -894,19 +878,11 @@ func (g *gui) Save() {
 			g.validationStatus.SetText(fmt.Sprintf("Validation: %d errors, %d warnings", len(result.Errors), len(result.Warnings)))
 			proceedSave := func() {
 				if err := g.pr.Save(slot, filepath.Join(dir, file), saveType); err != nil {
-					if g.prev != nil {
-						g.canvas.RemoveAll()
-						g.canvas.Add(g.prev)
-						g.window.Canvas().Refresh()
-					}
+					g.restorePreviousCanvas()
 					dialog.NewError(err, g.window).Show()
 				} else {
 					// Success
-					if g.prev != nil {
-						g.canvas.RemoveAll()
-						g.canvas.Add(g.prev)
-						g.window.Canvas().Refresh()
-					}
+					g.restorePreviousCanvas()
 				}
 			}
 			if !result.Valid {
@@ -937,16 +913,35 @@ func (g *gui) Save() {
 				g.save.Disabled = false
 			}()
 			// Cancel
-			if g.prev != nil {
-				g.canvas.RemoveAll()
-				g.canvas.Add(g.prev)
-				g.window.Canvas().Refresh()
-			}
+			g.restorePreviousCanvas()
 		}))
 }
 
 func (g *gui) Run() {
 	g.window.ShowAndRun()
+}
+
+// setCanvasContent safely replaces canvas content and refreshes layout
+func (g *gui) setCanvasContent(obj fyne.CanvasObject) {
+	g.canvas.RemoveAll()
+	g.canvas.Add(obj)
+	g.window.Canvas().Refresh()
+}
+
+// restorePreviousCanvas restores the previous canvas content and refreshes
+func (g *gui) restorePreviousCanvas() {
+	if g.prev != nil {
+		g.canvas.RemoveAll()
+		g.canvas.Add(g.prev)
+		g.window.Canvas().Refresh()
+	}
+}
+
+// savePreviousCanvas saves current canvas as previous before changing it
+func (g *gui) savePreviousCanvas() {
+	if len(g.canvas.Objects) > 0 {
+		g.prev = g.canvas.Objects[0]
+	}
 }
 
 func (m menuItem) Item() *fyne.MenuItem {
@@ -982,9 +977,7 @@ func (g *gui) showWelcomeScreen() {
 
 	// Quick action buttons with icons
 	openBtn := widget.NewButtonWithIcon("Open Save File", theme.FolderOpenIcon(), func() {
-		g.canvas.RemoveAll()
 		g.Load()
-		g.window.Canvas().Refresh()
 	})
 	openBtn.Importance = widget.HighImportance
 
