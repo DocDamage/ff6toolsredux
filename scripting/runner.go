@@ -4,6 +4,7 @@ import (
 	"context"
 	"ffvi_editor/io/pr"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -31,13 +32,14 @@ func RunSnippet(ctx context.Context, code string) (LuaResult, error) {
 
 	openSafeLibs(L)
 
-	// Restrict package.path to local plugins directory
+	// Restrict package.path to a local repo root (so tests can run from subdirs like ./cli).
+	root := repoRoot()
+	rootLua := filepath.ToSlash(root)
 	pluginPaths := []string{
-		"./?.lua",
-		"./?/init.lua",
-		"./plugins/?.lua",
-		"./plugins/?/init.lua",
-		"./plugins/?/v1_0_core.lua",
+		rootLua + "/?.lua",
+		rootLua + "/?/init.lua",
+		rootLua + "/plugins/?.lua",
+		rootLua + "/plugins/?/init.lua",
 	}
 	_ = L.DoString(fmt.Sprintf(`package.path = package.path .. ';%s'`, strings.Join(pluginPaths, ";")))
 	disableUnsafeGlobals(L)
@@ -81,13 +83,14 @@ func RunSnippetWithSave(ctx context.Context, code string, save *pr.PR) (LuaResul
 
 	openSafeLibs(L)
 
-	// Restrict package.path to local plugins directory
+	// Restrict package.path to a local repo root (so tests can run from subdirs like ./cli).
+	root := repoRoot()
+	rootLua := filepath.ToSlash(root)
 	pluginPaths := []string{
-		"./?.lua",
-		"./?/init.lua",
-		"./plugins/?.lua",
-		"./plugins/?/init.lua",
-		"./plugins/?/v1_0_core.lua",
+		rootLua + "/?.lua",
+		rootLua + "/?/init.lua",
+		rootLua + "/plugins/?.lua",
+		rootLua + "/plugins/?/init.lua",
 	}
 	_ = L.DoString(fmt.Sprintf(`package.path = package.path .. ';%s'`, strings.Join(pluginPaths, ";")))
 	disableUnsafeGlobals(L)
@@ -202,6 +205,36 @@ func disableUnsafeGlobals(L *lua.LState) {
 // PluginPath returns the plugins directory (currently relative).
 func PluginPath() string {
 	return filepath.Join(".", "plugins")
+}
+
+func repoRoot() string {
+	exists := func(path string) bool {
+		_, err := os.Stat(path)
+		return err == nil
+	}
+
+	candidates := []string{}
+	if wd, err := os.Getwd(); err == nil {
+		candidates = append(candidates, wd)
+	}
+	if exe, err := os.Executable(); err == nil {
+		candidates = append(candidates, filepath.Dir(exe))
+	}
+
+	for _, start := range candidates {
+		dir := start
+		for i := 0; i < 12; i++ {
+			if exists(filepath.Join(dir, "go.mod")) && exists(filepath.Join(dir, "plugins")) {
+				return dir
+			}
+			parent := filepath.Dir(dir)
+			if parent == dir {
+				break
+			}
+			dir = parent
+		}
+	}
+	return "."
 }
 
 // registerSaveBindings registers Go functions for save data manipulation in Lua.

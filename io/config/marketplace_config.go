@@ -7,10 +7,22 @@ import (
 	"time"
 )
 
+type MarketplaceConfig struct {
+	Enabled                  bool   `json:"enabled"`
+	RegistryURL              string `json:"registryURL,omitempty"`
+	CachePath                string `json:"cachePath,omitempty"`
+	CacheTTLHours            int    `json:"cacheTTLHours,omitempty"`
+	AutoCheckUpdates         bool   `json:"autoCheckUpdates,omitempty"`
+	UpdateCheckIntervalHours int    `json:"updateCheckIntervalHours,omitempty"`
+	MaxConcurrentDownloads   int    `json:"maxConcurrentDownloads,omitempty"`
+	LastUpdateCheckTime      string `json:"lastUpdateCheckTime,omitempty"`
+	EnableRatings            bool   `json:"enableRatings,omitempty"`
+	DefaultCategory          string `json:"defaultCategory,omitempty"`
+}
+
 // GetMarketplaceSettings returns the marketplace configuration
 func GetMarketplaceSettings() MarketplaceConfig {
-	mu.RLock()
-	defer mu.RUnlock()
+	zero := data.MarketplaceSettings == (MarketplaceConfig{})
 
 	// Apply defaults if not configured
 	settings := data.MarketplaceSettings
@@ -30,8 +42,8 @@ func GetMarketplaceSettings() MarketplaceConfig {
 		settings.CachePath = filepath.Join(SaveDir(), "marketplace", "cache")
 	}
 
-	// Default to enabled if not explicitly disabled
-	if !settings.Enabled && settings.RegistryURL != "" {
+	// Default to enabled only on first run (when config is entirely empty)
+	if zero {
 		settings.Enabled = true
 	}
 
@@ -40,72 +52,58 @@ func GetMarketplaceSettings() MarketplaceConfig {
 
 // SetMarketplaceSettings updates marketplace configuration and persists to file
 func SetMarketplaceSettings(settings MarketplaceConfig) error {
-	mu.Lock()
-	defer mu.Unlock()
-
 	data.MarketplaceSettings = settings
-	return save()
+	save()
+	return nil
 }
 
 // UpdateMarketplaceRegistryURL updates the marketplace registry URL
 func UpdateMarketplaceRegistryURL(url string) error {
-	mu.Lock()
-	defer mu.Unlock()
-
 	data.MarketplaceSettings.RegistryURL = url
-	return save()
+	save()
+	return nil
 }
 
 // UpdateLastMarketplaceCheckTime records when marketplace was last checked for updates
 func UpdateLastMarketplaceCheckTime() error {
-	mu.Lock()
-	defer mu.Unlock()
-
 	data.MarketplaceSettings.LastUpdateCheckTime = time.Now().Format(time.RFC3339)
-	return save()
+	save()
+	return nil
 }
 
 // SetMarketplaceEnabled toggles the marketplace feature
 func SetMarketplaceEnabled(enabled bool) error {
-	mu.Lock()
-	defer mu.Unlock()
-
 	data.MarketplaceSettings.Enabled = enabled
-	return save()
+	save()
+	return nil
 }
 
 // SetAutoCheckUpdates configures automatic update checking
 func SetAutoCheckUpdates(enabled bool, intervalHours int) error {
-	mu.Lock()
-	defer mu.Unlock()
-
 	data.MarketplaceSettings.AutoCheckUpdates = enabled
 	if intervalHours > 0 {
 		data.MarketplaceSettings.UpdateCheckIntervalHours = intervalHours
 	}
-	return save()
+	save()
+	return nil
 }
 
 // SetMarketplaceCacheTTL sets cache expiry time in hours
 func SetMarketplaceCacheTTL(hours int) error {
-	mu.Lock()
-	defer mu.Unlock()
-
 	if hours > 0 {
 		data.MarketplaceSettings.CacheTTLHours = hours
 	}
-	return save()
+	save()
+	return nil
 }
 
 // SetMaxConcurrentDownloads sets the maximum number of concurrent plugin downloads
 func SetMaxConcurrentDownloads(max int) error {
-	mu.Lock()
-	defer mu.Unlock()
-
 	if max > 0 {
 		data.MarketplaceSettings.MaxConcurrentDownloads = max
 	}
-	return save()
+	save()
+	return nil
 }
 
 // GetMarketplaceCachePath returns the path where marketplace cache is stored
@@ -153,19 +151,17 @@ func GetMarketplaceRegistryURL() string {
 
 // ResetMarketplaceSettings resets marketplace configuration to defaults
 func ResetMarketplaceSettings() error {
-	mu.Lock()
-	defer mu.Unlock()
-
 	data.MarketplaceSettings = MarketplaceConfig{
-		Enabled:                true,
-		RegistryURL:            "https://raw.githubusercontent.com/ff6-marketplace/registry/main",
-		CachePath:              filepath.Join(SaveDir(), "marketplace", "cache"),
-		CacheTTLHours:          24,
-		AutoCheckUpdates:       true,
+		Enabled:                  true,
+		RegistryURL:              "https://raw.githubusercontent.com/ff6-marketplace/registry/main",
+		CachePath:                filepath.Join(SaveDir(), "marketplace", "cache"),
+		CacheTTLHours:            24,
+		AutoCheckUpdates:         true,
 		UpdateCheckIntervalHours: 12,
-		MaxConcurrentDownloads: 3,
-		EnableRatings:          true,
-		DefaultCategory:        "All Categories",
+		MaxConcurrentDownloads:   3,
+		EnableRatings:            true,
+		DefaultCategory:          "All Categories",
 	}
-	return save()
+	save()
+	return nil
 }

@@ -3,6 +3,7 @@ package file
 import (
 	"bytes"
 	"encoding/base64"
+	"os"
 	"testing"
 
 	"ffvi_editor/global"
@@ -55,9 +56,9 @@ func TestLoadFileTooShort(t *testing.T) {
 
 // TestLoadFileBOMRemoval tests that BOM (Byte Order Mark) is properly detected and trimmed
 func TestLoadFileBOMRemoval(t *testing.T) {
-	bom := []byte{239, 187, 191}                                    // UTF-8 BOM
-	testData := []byte("test")                                       // dummy data to pass base64 check
-	fileContent := append(bom, testData...)                          // prepend BOM
+	bom := []byte{239, 187, 191}            // UTF-8 BOM
+	testData := []byte("test")              // dummy data to pass base64 check
+	fileContent := append(bom, testData...) // prepend BOM
 
 	tmpFile := t.TempDir() + "/test.save"
 	if err := writeTestFile(tmpFile, fileContent); err != nil {
@@ -189,15 +190,11 @@ func isValidBase64(s string) bool {
 
 // Simple file I/O helpers to avoid platform-specific code
 func writeFile(path string, data []byte) error {
-	// This would use os.WriteFile in actual implementation
-	// For testing purposes, we'll implement it directly
-	return nil
+	return os.WriteFile(path, data, 0644)
 }
 
 func readFile(path string) ([]byte, error) {
-	// This would use os.ReadFile in actual implementation
-	// For testing purposes, this is a stub
-	return nil, nil
+	return os.ReadFile(path)
 }
 
 // TestSaveFileCompressionWorks tests that data is compressed before encryption

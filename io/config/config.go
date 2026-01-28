@@ -18,13 +18,14 @@ var (
 
 type (
 	d struct {
-		WindowX           float32 `json:"width"`
-		WindowY           float32 `json:"height"`
-		SaveDir           string  `json:"dir"`
-		AutoEnableCmd     bool    `json:"autoEnableCmd"`
-		EnablePlayStation bool    `json:"ps"`
-		WorldMapPoints    map[int]map[string]MapPoint `json:"worldMapPoints,omitempty"`
-		WorldMapLocations map[int][]string            `json:"worldMapLocations,omitempty"`
+		WindowX             float32                     `json:"width"`
+		WindowY             float32                     `json:"height"`
+		SaveDir             string                      `json:"dir"`
+		AutoEnableCmd       bool                        `json:"autoEnableCmd"`
+		EnablePlayStation   bool                        `json:"ps"`
+		WorldMapPoints      map[int]map[string]MapPoint `json:"worldMapPoints,omitempty"`
+		WorldMapLocations   map[int][]string            `json:"worldMapLocations,omitempty"`
+		MarketplaceSettings MarketplaceConfig           `json:"marketplaceSettings,omitempty"`
 	}
 )
 

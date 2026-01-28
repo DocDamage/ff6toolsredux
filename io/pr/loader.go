@@ -469,8 +469,29 @@ func (p *PR) loadInventory(key string, inventory *pri.Inventory) (err error) {
 	}
 	inventory.Reset()
 	for i, r := range sl.([]interface{}) {
-		if err = json.Unmarshal([]byte(r.(string)), &row); err != nil {
-			return
+		switch v := r.(type) {
+		case string:
+			if err = json.Unmarshal([]byte(v), &row); err != nil {
+				return
+			}
+		case *jo.OrderedMap:
+			var b []byte
+			if b, err = v.MarshalJSON(); err != nil {
+				return
+			}
+			if err = json.Unmarshal(b, &row); err != nil {
+				return
+			}
+		case map[string]interface{}:
+			var b []byte
+			if b, err = json.Marshal(v); err != nil {
+				return
+			}
+			if err = json.Unmarshal(b, &row); err != nil {
+				return
+			}
+		default:
+			return fmt.Errorf("unexpected inventory row type %T", r)
 		}
 		inventory.Set(i, row)
 	}
@@ -550,7 +571,23 @@ func (p *PR) loadTransportation() (err error) {
 	pri.Transportations = make([]*pri.Transportation, len(sl.([]interface{})))
 	for index, i := range sl.([]interface{}) {
 		om := jo.NewOrderedMap()
-		if err = om.UnmarshalJSON([]byte(i.(string))); err != nil {
+		switch v := i.(type) {
+		case string:
+			if err = om.UnmarshalJSON([]byte(v)); err != nil {
+				return
+			}
+		case *jo.OrderedMap:
+			om = v
+		case map[string]interface{}:
+			var b []byte
+			if b, err = json.Marshal(v); err != nil {
+				return
+			}
+			if err = om.UnmarshalJSON(b); err != nil {
+				return
+			}
+		default:
+			err = fmt.Errorf("unexpected transportation row type %T", i)
 			return
 		}
 		t := &pri.Transportation{}
@@ -766,10 +803,14 @@ func (p *PR) getIntFromSlice(from *jo.OrderedMap, key string) (v int, err error)
 
 func (p *PR) unmarshalFrom(from *jo.OrderedMap, key string, m *jo.OrderedMap) (err error) {
 	i, ok := from.GetValue(key)
-	if !ok {
-		err = fmt.Errorf("unable to find %s", key)
+	if !ok || i == nil {
+		return fmt.Errorf("unable to find %s", key)
 	}
-	return m.UnmarshalJSON([]byte(i.(string)))
+	s, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("unable to unmarshal %s: expected string", key)
+	}
+	return m.UnmarshalJSON([]byte(s))
 }
 
 func (p *PR) unmarshal(i interface{}, m *map[string]interface{}) error {

@@ -38,7 +38,11 @@ func TestCombatPackSmokeCLI(t *testing.T) {
 	}
 
 	// Expect JSON with passed/failed/total keys.
-	dec := json.NewDecoder(strings.NewReader(out))
+	start := strings.LastIndex(out, "{")
+	if start == -1 {
+		t.Fatalf("smoke output missing JSON object: raw=%s", out)
+	}
+	dec := json.NewDecoder(strings.NewReader(out[start:]))
 	var payload map[string]interface{}
 	if err := dec.Decode(&payload); err != nil {
 		t.Fatalf("failed to decode smoke JSON output: %v; raw=%s", err, out)

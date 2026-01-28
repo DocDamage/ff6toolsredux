@@ -2,13 +2,33 @@
 
 ## Prerequisites
 
-### 1. Go 1.25.6 (Installed ✅)
-Located at: `C:\Program Files\Go`
+### 1. Go (required)
+This repo is set to `go 1.22` (see `go.mod`), so install Go 1.22+.
 
-### 2. MinGW-w64 GCC Compiler (Installed ✅)
-Located at: `C:\msys64\mingw64\bin`
+Recommended install (Windows):
+```powershell
+winget install GoLang.Go
+```
 
-The GCC compiler is required for CGO (C bindings) which Fyne uses for OpenGL rendering.
+Verify:
+```powershell
+go version
+```
+
+### 2. C compiler for CGO (required for Fyne)
+Fyne uses OpenGL via CGO, so Windows builds require a GCC toolchain.
+
+Recommended install (Windows):
+```powershell
+winget install MSYS2.MSYS2
+```
+
+After installing MSYS2, install a GCC toolchain in the MSYS2 shell (one of these):
+```bash
+pacman -S --needed mingw-w64-x86_64-gcc
+# or
+pacman -S --needed mingw-w64-ucrt-x86_64-gcc
+```
 
 ## Quick Build
 
@@ -20,7 +40,7 @@ go build -o ffvi-save-editor.exe
 
 ### Option 2: Manual Build
 ```powershell
-$env:Path = "C:\msys64\mingw64\bin;$env:Path"
+$env:Path = "C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;$env:Path"
 $env:CGO_ENABLED = 1
 go build -o ffvi-save-editor.exe
 ```
@@ -78,7 +98,7 @@ go build -gcflags="all=-N -l" -o ffvi-save-editor-debug.exe
 ### "gcc: not found"
 Run the setup script or manually add MinGW to PATH:
 ```powershell
-$env:Path = "C:\msys64\mingw64\bin;$env:Path"
+$env:Path = "C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;$env:Path"
 ```
 
 ### "cgo: C compiler not found"
@@ -155,7 +175,7 @@ ffvi_editor/
 ## Dependencies
 
 Major dependencies (auto-downloaded during build):
-- **fyne.io/fyne/v2**: GUI framework (v2.5.2)
+- **fyne.io/fyne/v2**: GUI framework
 - **github.com/go-gl/gl**: OpenGL bindings
 - **github.com/kiamev/ffpr-save-cypher**: Save encryption (v1.0.0)
 - **gitlab.com/c0b/go-ordered-json**: JSON with key ordering

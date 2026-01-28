@@ -8,10 +8,12 @@ import (
 	"path/filepath"
 	"strings"
 
+	"ffvi_editor/achievements"
 	"ffvi_editor/browser"
 	"ffvi_editor/global"
 	"ffvi_editor/io/config"
 	"ffvi_editor/io/pr"
+	"ffvi_editor/settings"
 	"ffvi_editor/ui/forms"
 	"ffvi_editor/ui/forms/selections"
 
@@ -34,18 +36,20 @@ type (
 		Run()
 	}
 	gui struct {
-		app             fyne.App
-		window          fyne.Window
-		canvas          *fyne.Container
-		open            *fyne.MenuItem
-		save            *fyne.MenuItem
-		saveState       *fyne.MenuItem
-		loadState       *fyne.MenuItem
-		quickSaveStates []*fyne.MenuItem
-		quickLoadStates []*fyne.MenuItem
-		prev            fyne.CanvasObject
-		pr              *pr.PR
-		background      *fyne.Container
+		app                fyne.App
+		window             fyne.Window
+		canvas             *fyne.Container
+		settingsManager    *settings.Manager
+		achievementTracker *achievements.Tracker
+		open               *fyne.MenuItem
+		save               *fyne.MenuItem
+		saveState          *fyne.MenuItem
+		loadState          *fyne.MenuItem
+		quickSaveStates    []*fyne.MenuItem
+		quickLoadStates    []*fyne.MenuItem
+		prev               fyne.CanvasObject
+		pr                 *pr.PR
+		background         *fyne.Container
 	}
 	MenuItem interface {
 		Item() *fyne.MenuItem
@@ -78,9 +82,11 @@ func New() Gui {
 	var (
 		a = app.New()
 		g = &gui{
-			app:    a,
-			window: a.NewWindow(fmt.Sprintf("Final Fantasy VI Save Editor - v%s", browser.Version)),
-			canvas: container.NewStack(),
+			app:                a,
+			window:             a.NewWindow(fmt.Sprintf("Final Fantasy VI Save Editor - v%s", browser.Version)),
+			canvas:             container.NewStack(),
+			settingsManager:    settings.NewManager(filepath.Join(global.PWD, "ff6editor.settings.json")),
+			achievementTracker: achievements.NewTracker(),
 		}
 	)
 
