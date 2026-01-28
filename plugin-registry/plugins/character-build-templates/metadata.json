@@ -1,0 +1,13 @@
+{
+  "id": "character-build-templates",
+  "name": "Character Build Templates",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Save and share character build presets with equipment, espers, and spells. Manage build library and validate feasibility.",
+  "permissions": ["read_save", "write_save", "ui_display", "file_io"],
+  "min_editor_version": "3.4.0",
+  "tags": ["builds", "templates", "management", "sharing"],
+  "category": "utility",
+  "api_dependencies": ["character", "equipment", "spell", "file"],
+  "status": "stable"
+}

@@ -1,0 +1,37 @@
+{
+  "id": "element-affinity-system",
+  "name": "Element Affinity System",
+  "version": "1.0.0",
+  "author": "FF6 Editor Plugin System",
+  "description": "Assign Pokemon-style elemental affinities to characters with weakness/resistance patterns and element-based stat bonuses for strategic party composition.",
+  "category": "experimental",
+  "tags": ["elements", "stats", "strategy", "type-system", "combat"],
+  "ff6_editor_version": "3.4.0",
+  "permissions": [
+    "read_save",
+    "write_save",
+    "ui_display"
+  ],
+  "dependencies": [],
+  "phase": 6,
+  "batch": 4,
+  "complexity": "intermediate-advanced",
+  "estimated_loc": 680,
+  "features": [
+    "8 elemental affinities (Fire, Ice, Lightning, Water, Wind, Earth, Holy, Dark)",
+    "Weakness/resistance patterns",
+    "Element-based stat bonuses",
+    "Party composition analyzer",
+    "Elemental synergy calculator",
+    "Enemy matchup analysis",
+    "Preset affinity patterns",
+    "Visual affinity indicators",
+    "Export configurations"
+  ],
+  "warnings": [
+    "EXPERIMENTAL: Significantly alters character balance",
+    "Stat modifications affect combat effectiveness",
+    "Save backup recommended before use",
+    "May create unbalanced character builds"
+  ]
+}

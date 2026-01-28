@@ -1,0 +1,23 @@
+{
+  "id": "equipment-restriction-remover",
+  "name": "Equipment Restriction Remover",
+  "version": "1.0.0",
+  "author": "FF6 Plugin Team",
+  "description": "Break all equipment restrictions - any character equips anything, remove gender restrictions, enable dual-wielding, relic stacking, unrestricted builds",
+  "category": "experimental",
+  "permissions": [
+    "read_save",
+    "write_save",
+    "ui_display"
+  ],
+  "tags": [
+    "equipment",
+    "restrictions",
+    "relics",
+    "weapons",
+    "armor",
+    "experimental"
+  ],
+  "api_version": "1.0",
+  "min_editor_version": "3.4.0"
+}

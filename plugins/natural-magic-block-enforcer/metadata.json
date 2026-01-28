@@ -1,0 +1,30 @@
+{
+  "id": "natural-magic-block-enforcer",
+  "name": "Natural Magic Block Enforcer",
+  "description": "Enforce Natural Magic Block challenge rules by removing all magic, preventing spell learning, and removing espers.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.0.0",
+  "permissions": ["read_save", "write_save", "ui_display"],
+  "priority": "medium",
+  "category": "gameplay-altering",
+  "phase": 6,
+  "week": 12,
+  "tags": ["challenge", "magic", "nmb", "restriction"],
+  "dependencies": [],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release",
+        "Remove all magic from all characters",
+        "Prevent magic learning (set rates to 0)",
+        "Remove/hide espers from inventory",
+        "Physical-only build validator",
+        "Challenge compliance checker",
+        "Restore wizard (undo changes)",
+        "Export challenge proof"
+      ]
+    }
+  ]
+}

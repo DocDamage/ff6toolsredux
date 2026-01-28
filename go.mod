@@ -8,8 +8,10 @@ toolchain go1.22.4
 
 require (
 	fyne.io/fyne/v2 v2.7.2
+	github.com/fsnotify/fsnotify v1.9.0
 	github.com/kiamev/ffpr-save-cypher v1.0.0
 	github.com/sqweek/dialog v0.0.0-20240226140203-065105509627
+	github.com/yuin/gopher-lua v1.1.0
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
 )
 
@@ -19,7 +21,6 @@ require (
 	github.com/TheTitanrain/w32 v0.0.0-20200114052255-2654d97dbd3d // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fredbi/uri v1.1.1 // indirect
-	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fyne-io/gl-js v0.2.0 // indirect
 	github.com/fyne-io/glfw-js v0.3.0 // indirect
 	github.com/fyne-io/image v0.1.1 // indirect

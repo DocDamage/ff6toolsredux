@@ -1,0 +1,36 @@
+{
+  "id": "custom-progression-pacing",
+  "name": "Custom Progression Pacing",
+  "description": "Control all progression rates: experience, spell learning, gil, and drop rates. Create custom pacing profiles for any playstyle.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.0.0",
+  "permissions": ["read_save", "write_save", "ui_display"],
+  "priority": "high-experimental",
+  "category": "gameplay-altering",
+  "phase": 6,
+  "batch": 3,
+  "week": 13,
+  "tags": ["progression", "rates", "difficulty", "experimental", "batch3"],
+  "dependencies": [],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release - Phase 6 Batch 3",
+        "Experience gain rate multiplier (0.1x to 100x)",
+        "Spell learning rate multiplier (0x to 10x)",
+        "Gil acquisition rate (0.1x to 10x)",
+        "Drop rate modification (0.1x to 10x)",
+        "AP gain rate for espers (0.1x to 10x)",
+        "Configurable per character or global",
+        "Preset pacing profiles (Speedrun/Casual/Completionist)",
+        "Real-time rate adjustment",
+        "Rate history tracking",
+        "Export pacing configuration",
+        "Save/load custom pacing profiles",
+        "Rate calculation verification"
+      ]
+    }
+  ]
+}

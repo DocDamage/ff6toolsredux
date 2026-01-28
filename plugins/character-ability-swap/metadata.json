@@ -1,0 +1,31 @@
+{
+  "id": "character-ability-swap",
+  "name": "Character Ability Swap",
+  "description": "Give any character any special command ability. Mix and match up to 4 commands per character with preset builds.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.0.0",
+  "permissions": ["read_save", "write_save", "ui_display"],
+  "priority": "high-experimental",
+  "category": "gameplay-altering",
+  "phase": 6,
+  "week": 11,
+  "tags": ["abilities", "commands", "transformation", "experimental"],
+  "dependencies": [],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release",
+        "Swap command abilities between characters",
+        "14 character command ability library",
+        "Mix and match up to 4 commands per character",
+        "Command preview with descriptions",
+        "Save/load custom ability sets",
+        "Reset to default abilities",
+        "Preset builds (All-Magic, All-Physical, etc.)",
+        "Export configurations"
+      ]
+    }
+  ]
+}

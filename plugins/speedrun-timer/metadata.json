@@ -1,0 +1,30 @@
+{
+  "id": "speedrun-timer",
+  "name": "Speedrun Timer Integration",
+  "description": "Track split times for speedrun categories with manual/auto splits, personal best comparison, and route planning.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.0.0",
+  "permissions": ["read_save", "ui_display", "file_io"],
+  "priority": "low-medium",
+  "category": "challenge-advanced",
+  "phase": 5,
+  "week": 10,
+  "tags": ["speedrun", "timer", "splits", "routing"],
+  "dependencies": [],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release",
+        "Split timer with manual triggers",
+        "5 speedrun categories (Any%, Glitchless, 100%, Low Level, WoR Skip)",
+        "Personal best tracking and comparison",
+        "Split management (add/remove/reorder)",
+        "Route planning tool",
+        "Export to speedrun.com format",
+        "Segment analysis"
+      ]
+    }
+  ]
+}

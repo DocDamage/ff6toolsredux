@@ -1,0 +1,24 @@
+{
+  "id": "world-state-manipulator",
+  "name": "World State Manipulator",
+  "version": "1.0.0",
+  "author": "FF6 Plugin Team",
+  "description": "Toggle between World of Balance and World of Ruin, manipulate event flags, control story progression, access both worlds simultaneously (experimental)",
+  "category": "experimental",
+  "permissions": [
+    "read_save",
+    "write_save",
+    "ui_display"
+  ],
+  "tags": [
+    "world-state",
+    "events",
+    "story",
+    "flags",
+    "wob",
+    "wor",
+    "experimental"
+  ],
+  "api_version": "1.0",
+  "min_editor_version": "3.4.0"
+}

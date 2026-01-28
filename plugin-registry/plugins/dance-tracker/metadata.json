@@ -1,0 +1,20 @@
+{
+  "id": "dance-tracker",
+  "name": "Mog's Dance Tracker",
+  "version": "1.0.0",
+  "author": "FF6 Editor Team",
+  "contact": "https://github.com/ff6-save-editor",
+  "description": "Track Mog's 8 dances learned from locations with dance effects and world availability",
+  "longDescription": "The Dance Tracker plugin provides complete tracking of all 8 dances that Mog can learn from specific locations throughout Final Fantasy VI. View which dances you've learned, discover where to learn each dance, understand the four random abilities each dance can trigger, and know which dances are available in World of Balance vs World of Ruin. Features include a complete checklist of all 8 dances, detailed location maps and descriptions, dance effect summaries showing all four abilities per dance, world availability indicators, and completion percentage tracking. Perfect for Mog enthusiasts who want to master all of his unique dance abilities.",
+  "category": "tracker",
+  "tags": ["dance", "mog", "tracker", "collection", "completionist", "abilities"],
+  "permissions": ["read_save", "ui_display"],
+  "minEditorVersion": "3.4.0",
+  "homepage": "https://github.com/ff6-save-editor/plugin-registry/tree/main/plugins/dance-tracker",
+  "repository": "https://github.com/ff6-save-editor/plugin-registry",
+  "license": "MIT",
+  "dependencies": [],
+  "screenshots": [],
+  "documentation": "README.md",
+  "changelog": "CHANGELOG.md"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "colosseum-guide",
+  "name": "Colosseum Guide",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Interactive betting guide: item -> opponent -> reward mapping, enemy strategies, and reward tracking.",
+  "permissions": ["read_save", "ui_display"],
+  "min_editor_version": "3.4.0",
+  "tags": ["colosseum", "battle", "reference", "bets"],
+  "category": "completion",
+  "api_dependencies": ["inventory", "bestiary"],
+  "status": "stable"
+}

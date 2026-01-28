@@ -1,0 +1,20 @@
+{
+  "id": "stats-display",
+  "name": "Character Stats Display",
+  "version": "1.0.0",
+  "author": "FF6 Editor Team",
+  "contact": "https://github.com/ff6-save-editor",
+  "description": "Display comprehensive character statistics including HP, MP, equipment, learned spells, and command assignments in a formatted view",
+  "longDescription": "The Character Stats Display plugin provides a comprehensive, formatted view of all character information in one convenient display. Select any character from your save file and view their complete statistics including basic stats (level, experience), HP/MP with percentages, combat stats (Vigor, Stamina, Speed, Magic), all 6 equipment slots, learned spells with proficiency levels, and command assignments. Perfect for quickly reviewing character builds without navigating through multiple editor tabs. The plugin supports configurable display options for showing/hiding specific sections and sorting spells by proficiency.",
+  "category": "utility",
+  "tags": ["stats", "character", "display", "analysis", "information"],
+  "permissions": ["read_save", "ui_display"],
+  "minEditorVersion": "3.4.0",
+  "homepage": "https://github.com/ff6-save-editor/plugin-registry/tree/main/plugins/stats-display",
+  "repository": "https://github.com/ff6-save-editor/plugin-registry",
+  "license": "MIT",
+  "dependencies": [],
+  "screenshots": ["screenshot.png"],
+  "documentation": "README.md",
+  "changelog": "CHANGELOG.md"
+}

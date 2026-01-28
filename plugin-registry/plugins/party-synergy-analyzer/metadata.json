@@ -1,0 +1,13 @@
+{
+  "id": "party-synergy-analyzer",
+  "name": "Party Synergy Analyzer",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Analyzes party composition for roles, elemental coverage, redundancy, and suggests improvements.",
+  "permissions": ["read_save", "ui_display"],
+  "min_editor_version": "3.4.0",
+  "tags": ["party", "synergy", "strategy", "analysis"],
+  "category": "strategy",
+  "api_dependencies": ["character", "equipment", "spells", "party"],
+  "status": "stable"
+}

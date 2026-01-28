@@ -1,0 +1,36 @@
+{
+  "id": "infinite-resources-mode",
+  "name": "Infinite Resources Mode",
+  "version": "1.0.0",
+  "author": "FF6 Editor Plugin System",
+  "description": "Remove resource management entirely with infinite items, gil, and MP. Perfect for testing, casual play, or focusing on story without resource constraints.",
+  "category": "experimental",
+  "tags": ["resources", "economy", "sandbox", "quality-of-life", "cheat"],
+  "ff6_editor_version": "3.4.0",
+  "permissions": [
+    "read_save",
+    "write_save",
+    "ui_display"
+  ],
+  "dependencies": [],
+  "phase": 6,
+  "batch": 4,
+  "complexity": "basic-intermediate",
+  "estimated_loc": 480,
+  "features": [
+    "Set all items to 99 quantity",
+    "Max Gil (9,999,999)",
+    "Infinite MP mode via stat modification",
+    "Selective infinite mode",
+    "Auto-replenish mode",
+    "One-click resource max",
+    "Undo/restore functionality",
+    "Operation logging"
+  ],
+  "warnings": [
+    "EXPERIMENTAL: Removes all resource management challenge",
+    "May significantly reduce game difficulty",
+    "Save backup recommended before use",
+    "Not suitable for challenge runs"
+  ]
+}

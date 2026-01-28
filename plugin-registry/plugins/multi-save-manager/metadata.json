@@ -1,0 +1,13 @@
+{
+  "id": "multi-save-manager",
+  "name": "Multi-Save Manager",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Manage multiple playthroughs and save slots with metadata, notes, statistics, and quick switching.",
+  "permissions": ["read_save", "ui_display", "file_io"],
+  "min_editor_version": "3.4.0",
+  "tags": ["saves", "management", "playthrough", "metadata"],
+  "category": "utility",
+  "api_dependencies": ["save_loader", "file"],
+  "status": "stable"
+}

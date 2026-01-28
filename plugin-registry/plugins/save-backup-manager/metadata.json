@@ -1,0 +1,13 @@
+{
+  "id": "save-backup-manager",
+  "name": "Save Backup Manager",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Automated backup management with timestamped backups, restore functionality, and backup rotation.",
+  "permissions": ["read_save", "write_save", "ui_display", "file_io"],
+  "min_editor_version": "3.4.0",
+  "tags": ["backup", "restore", "safety", "management"],
+  "category": "utility",
+  "api_dependencies": ["save_loader", "file"],
+  "status": "stable"
+}

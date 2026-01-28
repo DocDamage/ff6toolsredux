@@ -17,3 +17,14 @@ saved.file
 loaded.file
 ss/
 rsrc_*
+
+# Local artifacts / user data (do not commit)
+save_data/
+*.sfc
+*.smc
+Screenshot *.png
+build_errors*.txt
+test_output*.txt
+test.txt
+go*.windows-amd64.msi
+go*.src.tar.gz

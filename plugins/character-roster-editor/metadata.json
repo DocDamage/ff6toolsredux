@@ -1,0 +1,30 @@
+{
+  "id": "character-roster-editor",
+  "name": "Character Roster Editor",
+  "version": "1.2.0",
+  "author": "FF6 Plugin Team",
+  "description": "Advanced roster management - enable/disable characters, force solo runs, unlock all characters early, configure party size restrictions for challenge runs. NEW: Build sharing (v1.1.0) and Phase 11 integrations for analytics, dashboards, import/export, backups, and API hooks (v1.2.0).",
+  "category": "experimental",
+  "permissions": [
+    "read_save",
+    "write_save",
+    "ui_display",
+    "file_io"
+  ],
+  "tags": [
+    "roster",
+    "characters",
+    "challenge",
+    "solo",
+    "party",
+    "experimental",
+    "build-sharing",
+    "import-export",
+    "analytics",
+    "visualization",
+    "api",
+    "backup"
+  ],
+  "api_version": "1.0",
+  "min_editor_version": "3.4.0"
+}

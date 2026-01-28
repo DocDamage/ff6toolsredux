@@ -1,0 +1,20 @@
+{
+  "id": "item-manager",
+  "name": "Item Manager",
+  "version": "1.0.0",
+  "author": "FF6 Editor Team",
+  "contact": "https://github.com/ff6-save-editor",
+  "description": "Batch inventory operations for managing items including adding, removing, and setting quantities with safe mode confirmations",
+  "longDescription": "The Item Manager plugin provides powerful batch operations for inventory management. Features include: max all consumables (potions, ethers), add specific items by ID with custom quantities, remove items from inventory, modify existing item quantities, duplicate items to max quantity (99), clear all items with safety confirmation, and view comprehensive inventory summaries. All operations include safety confirmations and detailed previews before applying changes. Perfect for quickly configuring inventory for testing, speedruns, or specific game scenarios. Supports all item types including consumables, weapons, armor, relics, and key items.",
+  "category": "automation",
+  "tags": ["inventory", "items", "batch", "automation", "management"],
+  "permissions": ["read_save", "write_save", "ui_display"],
+  "minEditorVersion": "3.4.0",
+  "homepage": "https://github.com/ff6-save-editor/plugin-registry/tree/main/plugins/item-manager",
+  "repository": "https://github.com/ff6-save-editor/plugin-registry",
+  "license": "MIT",
+  "dependencies": [],
+  "screenshots": ["screenshot.png"],
+  "documentation": "README.md",
+  "changelog": "CHANGELOG.md"
+}

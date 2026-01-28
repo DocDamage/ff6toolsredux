@@ -1,0 +1,31 @@
+{
+  "id": "new-game-plus-generator",
+  "name": "New Game Plus Generator",
+  "description": "Generate New Game Plus saves with configurable carryover content and enemy stat scaling.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.0.0",
+  "permissions": ["read_save", "write_save", "ui_display", "file_io"],
+  "priority": "high-experimental",
+  "category": "gameplay-altering",
+  "phase": 6,
+  "week": 12,
+  "tags": ["ng+", "carryover", "difficulty", "experimental"],
+  "dependencies": [],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release",
+        "Configure carryover options (items/equipment/levels/spells/espers)",
+        "Enemy stat scaling (1x to 10x multipliers)",
+        "Start with all characters unlocked option",
+        "Keep or reset character levels",
+        "Preserve or clear inventory",
+        "World state selection (WoB/WoR)",
+        "Multiple NG+ profiles",
+        "Preset difficulty tiers"
+      ]
+    }
+  ]
+}

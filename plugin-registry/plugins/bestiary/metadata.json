@@ -1,0 +1,13 @@
+{
+  "id": "bestiary",
+  "name": "Bestiary",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Complete enemy reference with encounter tracking, weaknesses, drops, steals, and search/filter tools.",
+  "permissions": ["read_save", "ui_display"],
+  "min_editor_version": "3.4.0",
+  "tags": ["bestiary", "reference", "enemies", "collection"],
+  "category": "completion",
+  "api_dependencies": ["bestiary", "flags", "world_state"],
+  "status": "stable"
+}

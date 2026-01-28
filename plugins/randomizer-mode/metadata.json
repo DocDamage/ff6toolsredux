@@ -1,0 +1,39 @@
+{
+  "id": "randomizer-mode",
+  "name": "Randomizer Mode",
+  "description": "Randomize various game elements for endless replayability. Customize randomization intensity, apply seed-based randomization, and track randomizer results.",
+  "author": "FF6 Save Editor Plugin System",
+  "version": "1.0.0",
+  "permissions": ["read_save", "write_save", "ui_display"],
+  "priority": "high-experimental",
+  "category": "gameplay-altering",
+  "phase": 6,
+  "batch": 3,
+  "week": 13,
+  "tags": ["randomizer", "seed", "replayability", "experimental", "batch3"],
+  "dependencies": [],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-01-16",
+      "changes": [
+        "Initial release - Phase 6 Batch 3",
+        "Randomize character starting stats (within ranges)",
+        "Random starting equipment per character",
+        "Shuffle character command abilities",
+        "Random esper assignments",
+        "Random starting inventory",
+        "Shuffle spell learning (esper assignments)",
+        "Random character name generator",
+        "Seed-based randomization (reproducible)",
+        "Randomization intensity levels (Mild/Moderate/Chaos)",
+        "Export randomizer settings",
+        "Share randomizer seeds",
+        "Validate randomizer balance",
+        "Multiple preset intensity profiles",
+        "Seed tracking and history",
+        "Randomization statistics"
+      ]
+    }
+  ]
+}

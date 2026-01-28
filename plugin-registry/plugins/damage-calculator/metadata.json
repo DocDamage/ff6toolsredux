@@ -1,0 +1,13 @@
+{
+  "id": "damage-calculator",
+  "name": "Damage Calculator",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Battle planner for physical and magical damage with elemental modifiers, rows, statuses, and scenario comparisons.",
+  "permissions": ["read_save", "ui_display"],
+  "min_editor_version": "3.4.0",
+  "tags": ["battle", "calculator", "planning", "damage"],
+  "category": "strategy",
+  "api_dependencies": ["character", "equipment", "bestiary"],
+  "status": "stable"
+}

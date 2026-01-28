@@ -1,0 +1,13 @@
+{
+  "id": "slot-machine-reference",
+  "name": "Slot Machine Reference",
+  "version": "1.0.0",
+  "author": "FF6 Save Editor Team",
+  "description": "Setzer's Slots reference with outcomes, probabilities, damage estimates, and strategy tips.",
+  "permissions": ["read_save", "ui_display"],
+  "min_editor_version": "3.4.0",
+  "tags": ["slots", "reference", "setzer", "probability"],
+  "category": "strategy",
+  "api_dependencies": ["character"],
+  "status": "stable"
+}

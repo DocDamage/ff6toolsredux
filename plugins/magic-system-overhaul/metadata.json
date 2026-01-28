@@ -1,0 +1,23 @@
+{
+  "id": "magic-system-overhaul",
+  "name": "Magic System Overhaul",
+  "version": "1.0.0",
+  "author": "FF6 Plugin Team",
+  "description": "Fundamentally change magic system - unlimited MP, zero MP costs, unlock all spells, alternative cost systems (HP-based, item-based), magic power multipliers",
+  "category": "experimental",
+  "permissions": [
+    "read_save",
+    "write_save",
+    "ui_display"
+  ],
+  "tags": [
+    "magic",
+    "mp",
+    "spells",
+    "costs",
+    "system-overhaul",
+    "experimental"
+  ],
+  "api_version": "1.0",
+  "min_editor_version": "3.4.0"
+}

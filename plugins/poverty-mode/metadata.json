@@ -1,0 +1,37 @@
+{
+  "id": "poverty-mode",
+  "name": "Poverty Mode",
+  "version": "1.0.0",
+  "author": "FF6 Editor Plugin System",
+  "description": "Extreme challenge mode - remove all resources for a true survival experience. Zero Gil, minimal items, equipment-only survival.",
+  "category": "experimental",
+  "tags": ["challenge", "hardcore", "resources", "economy", "difficulty"],
+  "ff6_editor_version": "3.4.0",
+  "permissions": [
+    "read_save",
+    "write_save",
+    "ui_display"
+  ],
+  "dependencies": [],
+  "phase": 6,
+  "batch": 4,
+  "complexity": "intermediate",
+  "estimated_loc": 530,
+  "features": [
+    "Zero all Gil",
+    "Remove all consumable items",
+    "Keep only equipped items",
+    "Challenge compliance tracking",
+    "Gradual difficulty modes",
+    "Restoration wizard",
+    "Challenge proof export",
+    "Found items tracking"
+  ],
+  "warnings": [
+    "EXPERIMENTAL: Creates extreme difficulty challenge",
+    "Removes all consumable resources",
+    "Save backup REQUIRED before use",
+    "May make game unwinnable if used incorrectly",
+    "Not suitable for first playthroughs"
+  ]
+}

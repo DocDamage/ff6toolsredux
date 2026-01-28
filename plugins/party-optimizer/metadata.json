@@ -1,0 +1,25 @@
+{
+  "id": "party-optimizer",
+  "name": "Party Optimizer",
+  "version": "1.2.0",
+  "author": "FF6 Plugin Team",
+  "description": "Party composition optimizer with analytics, dashboards, automation, import/export, and backup hooks (Phase 11 Tier 1).",
+  "category": "utility",
+  "permissions": [
+    "read_save",
+    "write_save",
+    "ui_display",
+    "file_io"
+  ],
+  "tags": [
+    "party",
+    "optimizer",
+    "analytics",
+    "visualization",
+    "automation",
+    "import-export",
+    "backup"
+  ],
+  "api_version": "1.0",
+  "min_editor_version": "3.4.0"
+}
