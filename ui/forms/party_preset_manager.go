@@ -176,10 +176,58 @@ func (ppd *PartyPresetDialog) createNewPresetTab(parent fyne.Window) fyne.Canvas
 			return
 		}
 
-		// TODO: Create and save the preset
+		// Map character names to indices
+		charToIndex := map[string]uint8{
+			"Terra": 12, "Locke": 3, "Cyan": 1, "Shadow": 10,
+			"Edgar": 2, "Sabin": 8, "Celes": 0, "Strago": 11,
+			"Relm": 7, "Setzer": 9, "Mog": 6, "Gau": 4,
+			"Gogo": 5, "Umaro": 13,
+		}
+
+		// Build party members array
+		members := [4]uint8{255, 255, 255, 255} // 255 = empty slot
+		pickers := []*widget.Select{char1Picker, char2Picker, char3Picker, char4Picker}
+
+		for i, picker := range pickers {
+			if idx, ok := charToIndex[picker.Selected]; ok {
+				members[i] = idx
+			}
+		}
+
+		// Check if at least one member is selected
+		hasMember := false
+		for _, m := range members {
+			if m != 255 {
+				hasMember = true
+				break
+			}
+		}
+		if !hasMember {
+			dialog.ShowError(fmt.Errorf("select at least one party member"), parent)
+			return
+		}
+
+		// Create and save the preset
+		preset := &models.PartyPreset{
+			Name:        nameEntry.Text,
+			Description: descEntry.Text,
+			Members:     members,
+		}
+
+		if err := ppd.manager.CreatePreset(preset); err != nil {
+			dialog.ShowError(err, parent)
+			return
+		}
+
 		dialog.ShowInformation("Success", fmt.Sprintf("Preset '%s' saved", nameEntry.Text), parent)
 		nameEntry.SetText("")
 		descEntry.SetText("")
+
+		// Reset pickers
+		char1Picker.SetSelected("Select character 1")
+		char2Picker.SetSelected("Select character 2")
+		char3Picker.SetSelected("Select character 3")
+		char4Picker.SetSelected("Select character 4")
 	})
 
 	return container.NewVBox(

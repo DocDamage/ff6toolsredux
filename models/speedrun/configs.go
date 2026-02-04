@@ -6,39 +6,39 @@ type SpeedrunConfig struct {
 	Name        string
 	Description string
 	Category    string // "any%", "100%", "low_level", "solo", "glitchless", "pacifist"
-	
+
 	// Character configuration
 	Characters []CharacterConfig
-	
+
 	// Party configuration
 	PartyMembers []string // Character names
-	
+
 	// Equipment priority
 	EquipmentPriority map[string][]string // Character -> [equipment in priority order]
-	
+
 	// Magic learning order
 	MagicOrder []string
-	
+
 	// Item acquisition priority
 	ItemPriority []string
-	
+
 	// Level caps and restrictions
-	LevelCap      uint8
+	LevelCap            uint8
 	AllowSequenceBreaks bool
-	AllowMysteryTour bool
-	
+	AllowMysteryTour    bool
+
 	// Notes and tips
 	Tips []string
 }
 
 // CharacterConfig represents a speedrun character configuration
 type CharacterConfig struct {
-	Name      string
+	Name        string
 	TargetLevel uint8
-	Priority  int // Lower = higher priority
-	Equipment []string
-	Magic     []string
-	Commands  []string
+	Priority    int // Lower = higher priority
+	Equipment   []string
+	Magic       []string
+	Commands    []string
 }
 
 // Config package-level variables
@@ -97,9 +97,9 @@ func NewAnyPercentConfig() *SpeedrunConfig {
 			"Edgar": {"Steel Lance", "Iron Helm", "Iron Armor", "Barrier Ring"},
 			"Sabin": {"Iron Knuckles", "Iron Helm", "Gi", "Power Source"},
 		},
-		LevelCap:           99,
+		LevelCap:            99,
 		AllowSequenceBreaks: true,
-		AllowMysteryTour:   true,
+		AllowMysteryTour:    true,
 		Tips: []string{
 			"Skip non-essential boss fights",
 			"Use sequence breaks to skip story sections",
@@ -146,9 +146,9 @@ func NewOneHundredPercentConfig() *SpeedrunConfig {
 			"Edgar": {"Chainsaw", "Coronet", "Dueling Armor", "Genji Glove"},
 			"Celes": {"Ultima Weapon", "Coronet", "Celestriad", "Genji Glove"},
 		},
-		LevelCap:           99,
+		LevelCap:            99,
 		AllowSequenceBreaks: false,
-		AllowMysteryTour:   true,
+		AllowMysteryTour:    true,
 		Tips: []string{
 			"Collect all espers throughout the game",
 			"Learn all available magic for all characters",
@@ -188,8 +188,8 @@ func NewLowLevelConfig() *SpeedrunConfig {
 				Priority:    4,
 			},
 		},
-		PartyMembers: []string{"Terra", "Locke", "Edgar", "Sabin"},
-		LevelCap:    30,
+		PartyMembers:        []string{"Terra", "Locke", "Edgar", "Sabin"},
+		LevelCap:            30,
 		AllowSequenceBreaks: false,
 		Tips: []string{
 			"Level cap strictly enforced at 30",
@@ -219,7 +219,7 @@ func NewSoloCharacterConfig() *SpeedrunConfig {
 		EquipmentPriority: map[string][]string{
 			"Terra": {"Ultima Rod", "Circlet", "Celestriad", "Ring of Power"},
 		},
-		LevelCap:    99,
+		LevelCap:            99,
 		AllowSequenceBreaks: false,
 		Tips: []string{
 			"Only one character allowed in party at all times",
@@ -260,10 +260,10 @@ func NewGlitchlessConfig() *SpeedrunConfig {
 				Priority:    4,
 			},
 		},
-		PartyMembers: []string{"Terra", "Locke", "Edgar", "Celes"},
-		LevelCap:    99,
+		PartyMembers:        []string{"Terra", "Locke", "Edgar", "Celes"},
+		LevelCap:            99,
 		AllowSequenceBreaks: false,
-		AllowMysteryTour: false,
+		AllowMysteryTour:    false,
 		Tips: []string{
 			"No glitches or exploits allowed",
 			"Follow the intended game path",
@@ -303,8 +303,8 @@ func NewPacifistConfig() *SpeedrunConfig {
 				Priority:    4,
 			},
 		},
-		PartyMembers: []string{"Terra", "Locke", "Edgar", "Celes"},
-		LevelCap:    30,
+		PartyMembers:        []string{"Terra", "Locke", "Edgar", "Celes"},
+		LevelCap:            30,
 		AllowSequenceBreaks: false,
 		Tips: []string{
 			"Avoid all non-essential battles",

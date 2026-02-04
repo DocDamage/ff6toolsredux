@@ -14,24 +14,24 @@ func TestGetCharacter(t *testing.T) {
 	}
 
 	tests := []struct {
-		name    string
+		name     string
 		charName string
-		found   bool
+		found    bool
 	}{
 		{
-			name:    "find valid character",
+			name:     "find valid character",
 			charName: "Terra",
-			found:   true,
+			found:    true,
 		},
 		{
-			name:    "find another valid character",
+			name:     "find another valid character",
 			charName: "Locke",
-			found:   true,
+			found:    true,
 		},
 		{
-			name:    "invalid character returns nil",
+			name:     "invalid character returns nil",
 			charName: "NonExistent",
-			found:   false,
+			found:    false,
 		},
 	}
 
@@ -58,8 +58,8 @@ func TestGetCharacterByID(t *testing.T) {
 	}
 
 	tests := []struct {
-		name     string
-		id       int
+		name       string
+		id         int
 		shouldFind bool
 	}{
 		{

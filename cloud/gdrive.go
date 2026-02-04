@@ -28,13 +28,13 @@ type GoogleDriveProvider struct {
 // NewGoogleDriveProvider creates a new Google Drive provider
 func NewGoogleDriveProvider(clientID, clientSecret string) *GoogleDriveProvider {
 	return &GoogleDriveProvider{
-		clientID:    clientID,
+		clientID:     clientID,
 		clientSecret: clientSecret,
-		fileIDCache: make(map[string]string),
+		fileIDCache:  make(map[string]string),
 		status: &SyncStatus{
-			Provider:  "Google Drive",
+			Provider:   "Google Drive",
 			InProgress: false,
-			LastSync:  time.Time{},
+			LastSync:   time.Time{},
 		},
 	}
 }
@@ -76,8 +76,8 @@ func (g *GoogleDriveProvider) IsAuthenticated() bool {
 // GetAuthURL returns the OAuth2 authentication URL
 func (g *GoogleDriveProvider) GetAuthURL(ctx context.Context) (string, error) {
 	const (
-		authURL    = "https://accounts.google.com/o/oauth2/v2/auth"
-		scopes     = "https://www.googleapis.com/auth/drive.file"
+		authURL     = "https://accounts.google.com/o/oauth2/v2/auth"
+		scopes      = "https://www.googleapis.com/auth/drive.file"
 		redirectURI = "http://localhost:8080/callback"
 	)
 

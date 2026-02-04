@@ -53,4 +53,3 @@ func ClearMapPoint(world int, name string) {
 	delete(data.WorldMapPoints[world], name)
 	save()
 }
-

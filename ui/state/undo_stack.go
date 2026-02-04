@@ -278,6 +278,28 @@ func (us *UndoStack) Clear() {
 	us.currentBatchOps = make([]models.Change, 0)
 }
 
+// Undo performs an undo operation and returns the changes
+func (us *UndoStack) Undo() ([]models.Change, error) {
+	changes, _, err := us.PopUndo()
+	return changes, err
+}
+
+// Redo performs a redo operation and returns the changes
+func (us *UndoStack) Redo() ([]models.Change, error) {
+	changes, _, err := us.PopRedo()
+	return changes, err
+}
+
+// UndoDepth returns the number of undo operations available
+func (us *UndoStack) UndoDepth() int {
+	return us.GetUndoCount()
+}
+
+// RedoDepth returns the number of redo operations available
+func (us *UndoStack) RedoDepth() int {
+	return us.GetRedoCount()
+}
+
 // generateBatchID creates a unique batch ID
 func generateBatchID() string {
 	return fmt.Sprintf("batch_%d", time.Now().UnixNano())

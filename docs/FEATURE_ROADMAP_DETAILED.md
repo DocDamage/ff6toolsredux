@@ -1075,7 +1075,7 @@ final-fantasy-vi-save-editor-3.4.0/
 ├── LICENSE                              ✅ Project license (MIT)
 ├── README.md                            ✅ Project overview and usage instructions
 ├── icon.png                             ✅ Application icon
-├── ff6editor.config                     ✅ Editor configuration
+├── ff6editor.settings.json              ✅ Editor configuration
 ├── .gitignore                           ✅ Git ignore patterns
 ├── FEATURE_ROADMAP_DETAILED.md          ✅ This file - comprehensive feature roadmap
 ├── BUILD_INSTRUCTIONS.md                ✅ Build setup and compilation guide

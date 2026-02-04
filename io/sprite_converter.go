@@ -6,6 +6,7 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"time"
 
 	"ffvi_editor/models"
 )
@@ -297,7 +298,7 @@ func (c *FF6SpriteConverter) ConvertPalette(srcPalette *models.Palette, targetFo
 
 	// Create copy
 	dst := srcPalette.Clone()
-	dst.Modified = dst.Modified // Update modification time would go here
+	dst.Modified = time.Now() // Update modification time
 
 	// Could implement various transformations based on targetFormat
 	// For now, return copy

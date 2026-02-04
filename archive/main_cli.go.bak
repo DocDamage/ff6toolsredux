@@ -1,0 +1,24 @@
+package main
+
+import (
+	"ffvi_editor/cli"
+	"fmt"
+	"os"
+)
+
+func main() {
+	// CLI-only build (no GUI dependencies)
+	if len(os.Args) < 2 {
+		fmt.Println("FF6 Save Editor - CLI Mode")
+		fmt.Println("\nUsage: ffvi_editor_cli <command> [options]")
+		fmt.Println("\nFor full help: ffvi_editor_cli help")
+		fmt.Println("Combat Pack: ffvi_editor_cli combat-pack --mode help")
+		os.Exit(0)
+	}
+
+	c := cli.NewCLI(os.Args[1:])
+	if err := c.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+}

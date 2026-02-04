@@ -12,7 +12,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 
 	"ffvi_editor/cloud"
-	"ffvi_editor/io/config"
+	"ffvi_editor/settings"
 )
 
 // CloudSettingsDialog manages cloud sync settings and status
@@ -35,12 +35,14 @@ func NewCloudSettingsDialog(window fyne.Window, cloudManager *cloud.Manager) *Cl
 
 // Show displays the cloud settings dialog
 func (c *CloudSettingsDialog) Show() {
-	cfg := config.GetCloudSettings()
+	sm := settings.NewManager("")
+	_ = sm.Load()
+	s := sm.Get()
 
 	// Tab container for different sections
-	googleTab := c.buildGoogleDriveTab(&cfg)
-	dropboxTab := c.buildDropboxTab(&cfg)
-	syncTab := c.buildSyncSettingsTab(&cfg)
+	googleTab := c.buildGoogleDriveTab(s)
+	dropboxTab := c.buildDropboxTab(s)
+	syncTab := c.buildSyncSettingsTab(s)
 	statusTab := c.buildStatusTab()
 
 	tabs := container.NewAppTabs(
@@ -58,7 +60,7 @@ func (c *CloudSettingsDialog) Show() {
 
 	buttons := container.NewHBox(
 		widget.NewButton("Save", func() {
-			c.saveSettings()
+			_ = sm.Save()
 			dialog.ShowInformation("Success", "Cloud settings saved", c.window)
 		}),
 		widget.NewButton("Test All Connections", func() {
@@ -80,19 +82,19 @@ func (c *CloudSettingsDialog) Show() {
 }
 
 // buildGoogleDriveTab creates the Google Drive configuration tab
-func (c *CloudSettingsDialog) buildGoogleDriveTab(cfg *config.CloudConfig) *fyne.Container {
+func (c *CloudSettingsDialog) buildGoogleDriveTab(cfg *settings.Settings) *fyne.Container {
 	enableCheck := widget.NewCheck("Enable Google Drive", func(checked bool) {
-		cfg.GoogleDriveEnabled = checked
+		cfg.CloudEnabled = checked
 	})
-	enableCheck.SetChecked(cfg.GoogleDriveEnabled)
+	enableCheck.SetChecked(cfg.CloudEnabled)
 
 	clientIDEntry := widget.NewEntry()
 	clientIDEntry.SetText(cfg.GoogleDriveClientID)
-	clientIDEntry.SetPlaceHolder("OAuth2 Client ID")
+	clientIDEntry.SetPlaceHolder("Client ID")
 
 	clientSecretEntry := widget.NewEntry()
 	clientSecretEntry.SetText(cfg.GoogleDriveClientSecret)
-	clientSecretEntry.SetPlaceHolder("OAuth2 Client Secret")
+	clientSecretEntry.SetPlaceHolder("Client Secret")
 	clientSecretEntry.Password = true
 
 	authBtn := widget.NewButton("Authenticate with Google", func() {
@@ -124,7 +126,7 @@ func (c *CloudSettingsDialog) buildGoogleDriveTab(cfg *config.CloudConfig) *fyne
 }
 
 // buildDropboxTab creates the Dropbox configuration tab
-func (c *CloudSettingsDialog) buildDropboxTab(cfg *config.CloudConfig) *fyne.Container {
+func (c *CloudSettingsDialog) buildDropboxTab(cfg *settings.Settings) *fyne.Container {
 	enableCheck := widget.NewCheck("Enable Dropbox", func(checked bool) {
 		cfg.DropboxEnabled = checked
 	})
@@ -167,7 +169,7 @@ func (c *CloudSettingsDialog) buildDropboxTab(cfg *config.CloudConfig) *fyne.Con
 }
 
 // buildSyncSettingsTab creates the sync settings tab
-func (c *CloudSettingsDialog) buildSyncSettingsTab(cfg *config.CloudConfig) *fyne.Container {
+func (c *CloudSettingsDialog) buildSyncSettingsTab(cfg *settings.Settings) *fyne.Container {
 	autoSyncCheck := widget.NewCheck("Enable automatic sync", func(checked bool) {
 		cfg.AutoSync = checked
 	})
@@ -367,9 +369,5 @@ func (c *CloudSettingsDialog) syncNow() {
 
 // saveSettings saves all cloud settings to configuration
 func (c *CloudSettingsDialog) saveSettings() {
-	cfg := config.GetCloudSettings()
-	err := config.SetCloudSettings(cfg)
-	if err != nil {
-		dialog.ShowError(fmt.Errorf("failed to save settings: %w", err), c.window)
-	}
+	// No longer needed: settings are saved via unified settings manager
 }

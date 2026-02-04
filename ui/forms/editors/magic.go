@@ -1,6 +1,7 @@
 package editors
 
 import (
+	"fmt"
 	"strings"
 
 	"ffvi_editor/models"
@@ -21,6 +22,18 @@ type (
 )
 
 func NewMagic(c *models.Character) *Magic {
+	fmt.Printf("[DEBUG NewMagic] called, c=%v\n", c != nil)
+	if c == nil {
+		fmt.Println("[DEBUG NewMagic] WARNING: nil character")
+		return &Magic{
+			search: widget.NewEntry(),
+			left:   container.NewVBox(widget.NewLabel("Error: Character not found")),
+			middle: container.NewVBox(),
+			right:  container.NewVBox(),
+			c:      nil,
+		}
+	}
+	fmt.Printf("[DEBUG NewMagic] Creating magic editor for %s with %d spells\n", c.Name, len(c.SpellsSorted))
 	e := &Magic{
 		search: widget.NewEntry(),
 		left:   container.NewVBox(),
@@ -90,6 +103,12 @@ func (e *Magic) populate(include []fyne.CanvasObject) {
 }
 
 func (e *Magic) CreateRenderer() fyne.WidgetRenderer {
+	fmt.Printf("[DEBUG Magic.CreateRenderer] called, e.c=%v\n", e.c != nil)
+	if e.c == nil {
+		fmt.Println("[DEBUG Magic.CreateRenderer] WARNING: nil character")
+		return widget.NewSimpleRenderer(container.NewVBox(widget.NewLabel("Error: Character not found")))
+	}
+	fmt.Printf("[DEBUG Magic.CreateRenderer] Rendering magic for %s\n", e.c.Name)
 	return widget.NewSimpleRenderer(container.NewBorder(
 		container.NewGridWithColumns(5,
 			inputs.NewLabeledEntry("Search:", e.search),

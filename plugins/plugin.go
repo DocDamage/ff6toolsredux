@@ -152,13 +152,15 @@ func (p *Plugin) CallHook(hookType HookType, args ...interface{}) error {
 		return p.Unload()
 	case HookSaveOpen:
 		if p.OnSaveOpen != nil && len(args) > 0 {
-			if savePath, ok := args[0].(string); ok {
+			savePath, err := decodeString(args[0], "HookSaveOpen arg")
+			if err == nil {
 				return p.OnSaveOpen(savePath)
 			}
 		}
 	case HookSaveSave:
 		if p.OnSaveSave != nil && len(args) > 0 {
-			if savePath, ok := args[0].(string); ok {
+			savePath, err := decodeString(args[0], "HookSaveSave arg")
+			if err == nil {
 				return p.OnSaveSave(savePath)
 			}
 		}
@@ -185,6 +187,18 @@ func (p *Plugin) SetPath(path string) {
 // GetMetadata returns the full plugin metadata
 func (p *Plugin) GetMetadata() PluginMetadata {
 	return p.metadata
+}
+
+// decodeString is a minimal helper to coerce interface{} to string with context.
+func decodeString(v interface{}, context string) (string, error) {
+	switch s := v.(type) {
+	case string:
+		return s, nil
+	case fmt.Stringer:
+		return s.String(), nil
+	default:
+		return "", fmt.Errorf("expected string for %s, got %T", context, v)
+	}
 }
 
 // SetMetadata sets the plugin metadata

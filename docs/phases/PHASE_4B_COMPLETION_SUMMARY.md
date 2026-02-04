@@ -437,7 +437,7 @@ Documentation/
    ./ff6editor
    ```
 
-### Configuration File (ff6editor.config)
+### Configuration File (ff6editor.settings.json)
 
 ```json
 {

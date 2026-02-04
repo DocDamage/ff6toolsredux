@@ -10,7 +10,7 @@ type PartyPreset struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
-	Members     [4]uint8  `json:"members"`      // Character indices (0-13)
+	Members     [4]uint8  `json:"members"` // Character indices (0-13)
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 	Tags        []string  `json:"tags"`

@@ -121,7 +121,7 @@ func (d *PluginManagerDialog) OfferUpdates(updates map[string]*UpdateInfo) {
 
 ### 4. Configuration Setup (MEDIUM PRIORITY)
 
-**File:** `ff6editor.config`
+**File:** `ff6editor.settings.json`
 
 **Add section:**
 ```ini

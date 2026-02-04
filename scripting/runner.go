@@ -32,17 +32,10 @@ func RunSnippet(ctx context.Context, code string) (LuaResult, error) {
 
 	openSafeLibs(L)
 
-	// Restrict package.path to a local repo root (so tests can run from subdirs like ./cli).
-	root := repoRoot()
-	rootLua := filepath.ToSlash(root)
-	pluginPaths := []string{
-		rootLua + "/?.lua",
-		rootLua + "/?/init.lua",
-		rootLua + "/plugins/?.lua",
-		rootLua + "/plugins/?/init.lua",
-	}
-	_ = L.DoString(fmt.Sprintf(`package.path = package.path .. ';%s'`, strings.Join(pluginPaths, ";")))
-	disableUnsafeGlobals(L)
+	applyPackagePathSandbox(L)
+
+	// TODO: Enforce memory cap (gopher-lua does not support this natively; consider custom allocator or monitor usage)
+	// TODO: Block all network access (gopher-lua does not provide network by default, but document and test)
 
 	done := make(chan error, 1)
 	go func() {
@@ -83,17 +76,10 @@ func RunSnippetWithSave(ctx context.Context, code string, save *pr.PR) (LuaResul
 
 	openSafeLibs(L)
 
-	// Restrict package.path to a local repo root (so tests can run from subdirs like ./cli).
-	root := repoRoot()
-	rootLua := filepath.ToSlash(root)
-	pluginPaths := []string{
-		rootLua + "/?.lua",
-		rootLua + "/?/init.lua",
-		rootLua + "/plugins/?.lua",
-		rootLua + "/plugins/?/init.lua",
-	}
-	_ = L.DoString(fmt.Sprintf(`package.path = package.path .. ';%s'`, strings.Join(pluginPaths, ";")))
-	disableUnsafeGlobals(L)
+	applyPackagePathSandbox(L)
+
+	// TODO: Enforce memory cap (gopher-lua does not support this natively; consider custom allocator or monitor usage)
+	// TODO: Block all network access (gopher-lua does not provide network by default, but document and test)
 
 	// Register save bindings if save provided
 	if save != nil {
@@ -195,16 +181,45 @@ func disableUnsafeGlobals(L *lua.LState) {
 	L.SetGlobal("os", lua.LNil)
 	L.SetGlobal("debug", lua.LNil)
 
-	// Trim package fields that could escape the sandbox.
-	if pkg, ok := L.GetGlobal("package").(*lua.LTable); ok {
-		pkg.RawSetString("loadlib", lua.LNil)
-		pkg.RawSetString("cpath", lua.LString(""))
-	}
+	// Package path sandbox is applied separately.
 }
 
 // PluginPath returns the plugins directory (currently relative).
 func PluginPath() string {
 	return filepath.Join(".", "plugins")
+}
+
+func applyPackagePathSandbox(L *lua.LState) {
+	paths := pluginPathList()
+	if pkg, ok := L.GetGlobal("package").(*lua.LTable); ok {
+		pkg.RawSetString("loadlib", lua.LNil)
+		pkg.RawSetString("cpath", lua.LString(""))
+		pkg.RawSetString("path", lua.LString(strings.Join(paths, ";")))
+	}
+	L.SetGlobal("set_package_path", lua.LNil)
+}
+
+func pluginPathList() []string {
+	root := repoRoot()
+	rootLua := filepath.ToSlash(root)
+	return []string{
+		rootLua + "/?.lua",
+		rootLua + "/?/init.lua",
+		rootLua + "/plugins/?.lua",
+		rootLua + "/plugins/?/init.lua",
+		rootLua + "/plugins/?/v1_0_core.lua",
+	}
+}
+
+func decodeString(v interface{}, context string) (string, error) {
+	switch s := v.(type) {
+	case string:
+		return s, nil
+	case fmt.Stringer:
+		return s.String(), nil
+	default:
+		return "", fmt.Errorf("expected string for %s, got %T", context, v)
+	}
 }
 
 func repoRoot() string {
@@ -262,7 +277,7 @@ func registerSaveBindings(L *lua.LState, save *pr.PR) {
 		}
 		nameVal := save.Characters[idx].Get("name")
 		if nameVal != nil {
-			if nameStr, ok := nameVal.(string); ok {
+			if nameStr, err := decodeString(nameVal, "character name"); err == nil {
 				L.Push(lua.LString(nameStr))
 				return 1
 			}

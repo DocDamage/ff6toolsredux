@@ -12,7 +12,7 @@ type SketchMove struct {
 	Element     string
 	Effect      string
 	Description string
-	Difficulty int // 1-5, how rare/hard to sketch
+	Difficulty  int // 1-5, how rare/hard to sketch
 }
 
 // SketchDatabase contains all sketch moves
@@ -99,8 +99,8 @@ var SketchDatabase = map[int]*SketchMove{
 
 // SketchInfo contains stats about sketches
 type SketchInfo struct {
-	TotalSketches int
-	SketchedCount int
+	TotalSketches   int
+	SketchedCount   int
 	UnSketchedCount int
 	ProgressPercent float64
 }
@@ -192,9 +192,9 @@ func GetSketchInfo(sketched []bool) SketchInfo {
 	percent := float64(sketchedCount) / float64(totalSketches) * 100
 
 	return SketchInfo{
-		TotalSketches:      totalSketches,
-		SketchedCount:      sketchedCount,
-		UnSketchedCount:    totalSketches - sketchedCount,
-		ProgressPercent:    percent,
+		TotalSketches:   totalSketches,
+		SketchedCount:   sketchedCount,
+		UnSketchedCount: totalSketches - sketchedCount,
+		ProgressPercent: percent,
 	}
 }

@@ -43,11 +43,10 @@ func init() {
 }
 
 func GetCharacterIndex(name string) int {
-	if i, b := CharacterLookup[name]; !b {
-		panic("did not find character " + name)
-	} else {
+	if i, ok := CharacterLookup[name]; ok {
 		return i
 	}
+	return -1
 }
 
 /*

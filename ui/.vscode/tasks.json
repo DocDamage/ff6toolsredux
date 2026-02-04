@@ -1,0 +1,10 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Copy resources for go:embed",
+			"type": "shell",
+			"command": "copy ..\\resources\\ff6-world-map_world-of-balance.png resources\\ff6-world-map_world-of-balance.png && copy ..\\resources\\ff6-world-map_world-of-ruin.png resources\\ff6-world-map_world-of-ruin.png"
+		}
+	]
+}

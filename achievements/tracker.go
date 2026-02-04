@@ -87,7 +87,7 @@ func (t *Tracker) initializeAchievements() {
 			Points:      25,
 			MaxProgress: 10,
 		},
-		
+
 		// Game Achievements
 		{
 			ID:          "max_level",
@@ -129,7 +129,7 @@ func (t *Tracker) initializeAchievements() {
 			Points:      25,
 			MaxProgress: 10,
 		},
-		
+
 		// Community Achievements
 		{
 			ID:          "first_share",
@@ -202,12 +202,12 @@ func (t *Tracker) IncrementProgress(achievementID string, amount int) bool {
 		achievement.Progress = achievement.MaxProgress
 		achievement.Unlocked = true
 		achievement.UnlockedAt = time.Now()
-		
+
 		// Call unlock callback
 		if t.onUnlock != nil {
 			go t.onUnlock(achievement)
 		}
-		
+
 		return true // Achievement unlocked
 	}
 
@@ -229,11 +229,11 @@ func (t *Tracker) SetProgress(achievementID string, progress int) bool {
 		achievement.Progress = achievement.MaxProgress
 		achievement.Unlocked = true
 		achievement.UnlockedAt = time.Now()
-		
+
 		if t.onUnlock != nil {
 			go t.onUnlock(achievement)
 		}
-		
+
 		return true
 	}
 
@@ -299,11 +299,11 @@ func (t *Tracker) GetCompletionPercentage() float64 {
 			unlocked++
 		}
 	}
-	
+
 	if total == 0 {
 		return 0
 	}
-	
+
 	return (float64(unlocked) / float64(total)) * 100.0
 }
 

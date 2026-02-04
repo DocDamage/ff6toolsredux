@@ -7,12 +7,15 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"ffvi_editor/achievements"
 	"ffvi_editor/browser"
+	"ffvi_editor/cloud"
 	"ffvi_editor/global"
 	"ffvi_editor/io/config"
 	"ffvi_editor/io/pr"
+	"ffvi_editor/plugins"
 	"ffvi_editor/settings"
 	"ffvi_editor/ui/forms"
 	"ffvi_editor/ui/forms/selections"
@@ -50,6 +53,11 @@ type (
 		prev               fyne.CanvasObject
 		pr                 *pr.PR
 		background         *fyne.Container
+		// Initialization-related fields
+		autoSaveTicker *time.Ticker
+		stopAutoSave   chan bool
+		cloudManager   *cloud.Manager
+		pluginManager  *plugins.Manager
 	}
 	MenuItem interface {
 		Item() *fyne.MenuItem
@@ -68,12 +76,16 @@ var (
 )
 
 func New() Gui {
+	fmt.Println("[DEBUG UI] Initializing GUI...")
 	if wd, err := os.Getwd(); err == nil {
 		var dir []os.DirEntry
 		if dir, err = os.ReadDir(wd); err == nil {
 			for _, f := range dir {
 				if !f.IsDir() && strings.HasSuffix(f.Name(), ".ttf") {
-					_ = os.Setenv("FYNE_FONT", f.Name())
+					if err := os.Setenv("FYNE_FONT", f.Name()); err != nil {
+						// Non-critical: font setting is best-effort
+						fmt.Fprintf(os.Stderr, "[ui] failed to set FYNE_FONT: %v\n", err)
+					}
 					break
 				}
 			}
@@ -108,6 +120,7 @@ func New() Gui {
 	}
 	g.window.SetIcon(fyne.NewStaticResource("icon", resourceIconIco.StaticContent))
 	g.window.SetContent(g.background)
+	fmt.Println("[DEBUG UI] Window content set")
 	g.open = fyne.NewMenuItem("Open", func() {
 		g.Load()
 	})
@@ -176,11 +189,33 @@ func (g *gui) Load() {
 	g.canvas.RemoveAll()
 	g.canvas.Add(
 		forms.NewFileIO(forms.Load, g.window, config.SaveDir(), func(name, dir, file string, _ int, saveType global.SaveFileType) {
-			defer func() { g.open.Disabled = false }()
+			// Panic recovery
+			defer func() {
+				if r := recover(); r != nil {
+					global.Log("[Load] PANIC: %v", r)
+					fmt.Printf("[DEBUG Load] PANIC: %v\n", r)
+					g.open.Disabled = false
+					dialog.NewError(fmt.Errorf("Crash: %v", r), g.window).Show()
+				}
+			}()
+			global.Log("[Load] Starting load: name=%s, dir=%s, file=%s, type=%v", name, dir, file, saveType)
+			fmt.Printf("[DEBUG Load] Starting load: name=%s, dir=%s, file=%s, type=%v\n", name, dir, file, saveType)
+			defer func() { 
+				g.open.Disabled = false 
+				global.Log("[Load] Cleanup completed")
+				fmt.Println("[DEBUG Load] Deferred cleanup completed")
+			}()
 			// Load file
 			config.SetSaveDir(dir)
+			global.Log("[Load] Creating PR instance")
+			fmt.Println("[DEBUG Load] Creating PR instance...")
 			p := pr.New()
-			if err := p.Load(filepath.Join(dir, file), saveType); err != nil {
+			loadPath := filepath.Join(dir, file)
+			global.Log("[Load] Loading file: %s", loadPath)
+			fmt.Printf("[DEBUG Load] Loading file: %s\n", loadPath)
+			if err := p.Load(loadPath, saveType); err != nil {
+				global.Log("[Load] ERROR loading file: %v", err)
+				fmt.Printf("[DEBUG Load] ERROR loading file: %v\n", err)
 				if g.prev != nil {
 					g.canvas.RemoveAll()
 					g.canvas.Add(g.prev)
@@ -189,6 +224,10 @@ func (g *gui) Load() {
 				dialog.NewError(err, g.window).Show()
 			} else {
 				// Success
+				global.Log("[Load] File loaded successfully")
+				fmt.Println("[DEBUG Load] File loaded successfully")
+				global.Log("[Load] Clearing canvas...")
+				fmt.Println("[DEBUG Load] Clearing canvas...")
 				g.canvas.RemoveAll()
 				g.prev = nil
 				g.save.Disabled = false
@@ -201,8 +240,14 @@ func (g *gui) Load() {
 					item.Disabled = false
 				}
 				g.pr = p
+				global.Log("[Load] Creating editor...")
+				fmt.Println("[DEBUG Load] Creating editor...")
 				g.canvas.Add(selections.NewEditor())
+				global.Log("[Load] Editor added, refreshing...")
+				fmt.Println("[DEBUG Load] Editor added, refreshing...")
 				g.window.Content().Refresh()
+				global.Log("[Load] Load complete")
+				fmt.Println("[DEBUG Load] Load complete")
 			}
 		}, func() {
 			defer func() { g.open.Disabled = false }()
@@ -260,6 +305,25 @@ func (g *gui) Save() {
 }
 
 func (g *gui) Run() {
+	// Initialize settings
+	if err := g.initializeSettings(); err != nil {
+		fmt.Printf("Failed to initialize settings: %v\n", err)
+	}
+
+	// Initialize achievements
+	g.initializeAchievements()
+
+	// Initialize cloud sync if enabled
+	g.initializeCloudSync()
+
+	// Initialize plugins if enabled
+	g.initializePlugins()
+
+	// Set up window close handler for cleanup
+	g.window.SetOnClosed(func() {
+		g.cleanup()
+	})
+
 	g.window.ShowAndRun()
 }
 

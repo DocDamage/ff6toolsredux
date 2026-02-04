@@ -313,7 +313,7 @@ func (m *Manager) loadAllTemplates() error {
 		wg.Add(1)
 		go func(f fs.DirEntry) {
 			defer wg.Done()
-			semaphore <- struct{}{} // Acquire worker slot
+			semaphore <- struct{}{}        // Acquire worker slot
 			defer func() { <-semaphore }() // Release worker slot
 
 			templatePath := filepath.Join(m.templatesDir, f.Name())

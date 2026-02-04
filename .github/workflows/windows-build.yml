@@ -1,0 +1,71 @@
+name: Windows Build and Test
+
+on:
+  push:
+    branches: [ main, ffvieditorupdated ]
+  pull_request:
+    branches: [ main, ffvieditorupdated ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-pkg-config
+            mingw-w64-x86_64-glfw
+            mingw-w64-x86_64-openglapi
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Add MSYS2 to PATH
+        run: |
+          echo "C:\msys64\usr\bin;C:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+        shell: pwsh
+
+      - name: Install Fyne dependencies
+        run: |
+          pacman -S --noconfirm mingw-w64-x86_64-fyne
+        shell: msys2 {0}
+
+      - name: Install golangci-lint
+        run: |
+          choco install golangci-lint -y
+        shell: pwsh
+
+      - name: Run golangci-lint
+        run: golangci-lint run --timeout=5m
+
+      - name: Check gofmt
+        run: |
+          $unformatted = gofmt -l .
+          if ($unformatted) {
+            Write-Host "The following files are not gofmt'd:"
+            Write-Host $unformatted
+            exit 1
+          }
+
+      - name: Run Go tests
+        run: go test ./... -v 2>&1 | Tee-Object -FilePath test_output.txt
+        continue-on-error: true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test_output.txt
+
+      - name: Build executable
+        run: go build -v -o ff6editor.exe

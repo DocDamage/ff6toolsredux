@@ -1,6 +1,9 @@
 package pr
 
 import (
+	"fmt"
+	"os"
+
 	"ffvi_editor/models"
 	"ffvi_editor/models/consts"
 	"ffvi_editor/models/consts/pr"
@@ -14,7 +17,8 @@ func init() {
 	for i, name := range pr.Characters {
 		o, ok := CharacterOffsetByName[name]
 		if !ok {
-			panic("failed to load character " + name)
+			fmt.Fprintf(os.Stderr, "Warning: failed to load character %s\n", name)
+			continue
 		}
 		defaultCommand := pr.CommandLookupByValue[4]
 		c := &models.Character{

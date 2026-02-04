@@ -2,6 +2,8 @@ package settings
 
 import (
 	"encoding/json"
+	"ffvi_editor/global"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -30,6 +32,22 @@ type Settings struct {
 	CloudProvider  string `json:"cloudProvider"` // "gdrive", "dropbox"
 	CloudEncrypted bool   `json:"cloudEncrypted"`
 	CloudInterval  int    `json:"cloudInterval"` // Sync interval in minutes
+	DropboxEnabled bool   `json:"dropboxEnabled,omitempty"`
+
+	// Cloud Provider Credentials
+	GoogleDriveClientID     string `json:"googleDriveClientID,omitempty"`
+	GoogleDriveClientSecret string `json:"googleDriveClientSecret,omitempty"`
+	DropboxAppKey           string `json:"dropboxAppKey,omitempty"`
+	DropboxAppSecret        string `json:"dropboxAppSecret,omitempty"`
+
+	// Cloud Sync Settings (for cloud_settings.go compatibility)
+	AutoSync            bool   `json:"autoSync,omitempty"`
+	SyncIntervalMinutes int    `json:"syncIntervalMinutes,omitempty"`
+	EncryptionEnabled   bool   `json:"encryptionEnabled,omitempty"`
+	ConflictStrategy    string `json:"conflictStrategy,omitempty"`
+	VerifyHashes        bool   `json:"verifyHashes,omitempty"`
+	BackupFolderPath    string `json:"backupFolderPath,omitempty"`
+	TemplatesFolderPath string `json:"templatesFolderPath,omitempty"`
 
 	// UI
 	ShowLineNumbers bool `json:"showLineNumbers"`
@@ -61,6 +79,16 @@ type Settings struct {
 	EnableAchievements bool   `json:"enableAchievements"`
 	ShowDebugInfo      bool   `json:"showDebugInfo"`
 	LogLevel           string `json:"logLevel"` // "debug", "info", "warn", "error"
+
+	// Legacy config fields
+	WindowX             float32                        `json:"windowX,omitempty"`
+	WindowY             float32                        `json:"windowY,omitempty"`
+	SaveDir             string                         `json:"saveDir,omitempty"`
+	AutoEnableCmd       bool                           `json:"autoEnableCmd,omitempty"`
+	EnablePlayStation   bool                           `json:"enablePlayStation,omitempty"`
+	WorldMapPoints      map[int]map[string]interface{} `json:"worldMapPoints,omitempty"`
+	WorldMapLocations   map[int][]string               `json:"worldMapLocations,omitempty"`
+	MarketplaceSettings interface{}                    `json:"marketplaceSettings,omitempty"`
 }
 
 // Manager manages application settings
@@ -68,6 +96,7 @@ type Manager struct {
 	settings *Settings
 	filePath string
 	mu       sync.RWMutex
+	logger   *log.Logger
 }
 
 // New creates a new settings manager with default settings and empty file path
@@ -75,6 +104,7 @@ func New() *Manager {
 	return &Manager{
 		settings: DefaultSettings(),
 		filePath: "",
+		logger:   log.New(log.Writer(), "[settings] ", log.LstdFlags),
 	}
 }
 
@@ -83,7 +113,50 @@ func NewManager(configPath string) *Manager {
 	return &Manager{
 		settings: DefaultSettings(),
 		filePath: configPath,
+		logger:   log.New(log.Writer(), "[settings] ", log.LstdFlags),
 	}
+}
+
+// MigrateLegacyConfig migrates ff6editor.config to unified settings if needed
+func (m *Manager) MigrateLegacyConfig() error {
+	legacyPath := filepath.Join(global.PWD, "ff6editor.config")
+	if _, err := os.Stat(legacyPath); err == nil {
+		// Read legacy config
+		legacyData, err := os.ReadFile(legacyPath)
+		if err != nil {
+			return err
+		}
+		// Define legacy struct inline
+		type legacyConfig struct {
+			WindowX             float32                        `json:"width"`
+			WindowY             float32                        `json:"height"`
+			SaveDir             string                         `json:"dir"`
+			AutoEnableCmd       bool                           `json:"autoEnableCmd"`
+			EnablePlayStation   bool                           `json:"ps"`
+			WorldMapPoints      map[int]map[string]interface{} `json:"worldMapPoints,omitempty"`
+			WorldMapLocations   map[int][]string               `json:"worldMapLocations,omitempty"`
+			MarketplaceSettings interface{}                    `json:"marketplaceSettings,omitempty"`
+		}
+		var legacy legacyConfig
+		if err := json.Unmarshal(legacyData, &legacy); err == nil {
+			// Map legacy fields to unified settings
+			m.settings.WindowX = legacy.WindowX
+			m.settings.WindowY = legacy.WindowY
+			m.settings.SaveDir = legacy.SaveDir
+			m.settings.AutoEnableCmd = legacy.AutoEnableCmd
+			m.settings.EnablePlayStation = legacy.EnablePlayStation
+			m.settings.WorldMapPoints = legacy.WorldMapPoints
+			m.settings.WorldMapLocations = legacy.WorldMapLocations
+			m.settings.MarketplaceSettings = legacy.MarketplaceSettings
+			// Save unified settings
+			if err := m.Save(); err != nil {
+				return err
+			}
+			// Optionally archive or remove legacy config
+			_ = os.Rename(legacyPath, legacyPath+".bak")
+		}
+	}
+	return nil
 }
 
 // DefaultSettings returns default settings
@@ -155,13 +228,16 @@ func DefaultSettings() *Settings {
 
 // Load loads settings from file
 func (m *Manager) Load() error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	// Check if file exists
+	// Check if file exists (without holding lock to avoid deadlock with MigrateLegacyConfig)
 	if _, err := os.Stat(m.filePath); os.IsNotExist(err) {
-		// Use defaults
-		return nil
+		// Try to migrate legacy config first
+		if err := m.MigrateLegacyConfig(); err != nil {
+			return err
+		}
+		// If still no settings file, use defaults
+		if _, err := os.Stat(m.filePath); os.IsNotExist(err) {
+			return nil
+		}
 	}
 
 	// Read file
@@ -170,7 +246,9 @@ func (m *Manager) Load() error {
 		return err
 	}
 
-	// Parse JSON
+	// Parse JSON (with lock)
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	if err := json.Unmarshal(data, m.settings); err != nil {
 		return err
 	}
@@ -279,4 +357,178 @@ func (m *Manager) Reset() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.settings = DefaultSettings()
+}
+
+// --- Map Data Management ---
+
+// GetMapLocations returns user-added map location names for a world
+func (m *Manager) GetMapLocations(world int) []string {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.settings.WorldMapLocations == nil {
+		return nil
+	}
+	return append([]string{}, m.settings.WorldMapLocations[world]...)
+}
+
+// AddMapLocation adds a location name to a world
+func (m *Manager) AddMapLocation(world int, name string) {
+	m.mu.Lock()
+	if m.settings.WorldMapLocations == nil {
+		m.settings.WorldMapLocations = make(map[int][]string)
+	}
+	for _, n := range m.settings.WorldMapLocations[world] {
+		if n == name {
+			m.mu.Unlock()
+			return
+		}
+	}
+	m.settings.WorldMapLocations[world] = append(m.settings.WorldMapLocations[world], name)
+	m.mu.Unlock()
+	if m.filePath != "" {
+		if err := m.Save(); err != nil && m.logger != nil {
+			m.logger.Printf("failed to save settings after adding map location: %v", err)
+		}
+	}
+}
+
+// GetAllMapPoints returns all map points for a world
+func (m *Manager) GetAllMapPoints(world int) map[string]map[string]float64 {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	result := make(map[string]map[string]float64)
+	if m.settings.WorldMapPoints == nil {
+		return result
+	}
+	if points, ok := m.settings.WorldMapPoints[world]; ok {
+		for name, v := range points {
+			mp, ok := v.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			x, xok := mp["X"].(float64)
+			y, yok := mp["Y"].(float64)
+			if !xok || !yok {
+				continue
+			}
+			result[name] = map[string]float64{"X": x, "Y": y}
+		}
+	}
+	return result
+}
+
+// GetMapPoint returns a map point for a world and name
+func (m *Manager) GetMapPoint(world int, name string) (x, y float64, ok bool) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.settings.WorldMapPoints == nil {
+		return 0, 0, false
+	}
+	if points, ok := m.settings.WorldMapPoints[world]; ok {
+		if v, ok := points[name]; ok {
+			mp, ok := v.(map[string]interface{})
+			if !ok {
+				return 0, 0, false
+			}
+			x, xok := mp["X"].(float64)
+			y, yok := mp["Y"].(float64)
+			if !xok || !yok {
+				return 0, 0, false
+			}
+			return x, y, true
+		}
+	}
+	return 0, 0, false
+}
+
+// SetMapPoint sets a map point for a world and name
+func (m *Manager) SetMapPoint(world int, name string, x, y float64) {
+	m.mu.Lock()
+	if m.settings.WorldMapPoints == nil {
+		m.settings.WorldMapPoints = make(map[int]map[string]interface{})
+	}
+	if m.settings.WorldMapPoints[world] == nil {
+		m.settings.WorldMapPoints[world] = make(map[string]interface{})
+	}
+	m.settings.WorldMapPoints[world][name] = map[string]interface{}{"X": x, "Y": y}
+	m.mu.Unlock()
+	if m.filePath != "" {
+		if err := m.Save(); err != nil && m.logger != nil {
+			m.logger.Printf("failed to save settings after setting map point: %v", err)
+		}
+	}
+}
+
+// ClearMapPoint removes a map point for a world and name
+func (m *Manager) ClearMapPoint(world int, name string) {
+	m.mu.Lock()
+	if m.settings.WorldMapPoints == nil {
+		m.mu.Unlock()
+		return
+	}
+	if m.settings.WorldMapPoints[world] == nil {
+		m.mu.Unlock()
+		return
+	}
+	delete(m.settings.WorldMapPoints[world], name)
+	m.mu.Unlock()
+	if m.filePath != "" {
+		if err := m.Save(); err != nil && m.logger != nil {
+			m.logger.Printf("failed to save settings after clearing map point: %v", err)
+		}
+	}
+}
+
+// ClearAllMapPoints removes all map points for a world
+func (m *Manager) ClearAllMapPoints(world int) {
+	m.mu.Lock()
+	if m.settings.WorldMapPoints == nil {
+		m.mu.Unlock()
+		return
+	}
+	delete(m.settings.WorldMapPoints, world)
+	m.mu.Unlock()
+	if m.filePath != "" {
+		if err := m.Save(); err != nil && m.logger != nil {
+			m.logger.Printf("failed to save settings after clearing all map points: %v", err)
+		}
+	}
+}
+
+// RemoveMapLocation removes a location from a world
+func (m *Manager) RemoveMapLocation(world int, name string) {
+	m.mu.Lock()
+	if m.settings.WorldMapLocations == nil {
+		m.mu.Unlock()
+		return
+	}
+	locations := m.settings.WorldMapLocations[world]
+	for i, loc := range locations {
+		if loc == name {
+			m.settings.WorldMapLocations[world] = append(locations[:i], locations[i+1:]...)
+			break
+		}
+	}
+	m.mu.Unlock()
+	if m.filePath != "" {
+		if err := m.Save(); err != nil && m.logger != nil {
+			m.logger.Printf("failed to save settings after removing map location: %v", err)
+		}
+	}
+}
+
+// ClearMapLocations removes all locations for a world
+func (m *Manager) ClearMapLocations(world int) {
+	m.mu.Lock()
+	if m.settings.WorldMapLocations == nil {
+		m.mu.Unlock()
+		return
+	}
+	delete(m.settings.WorldMapLocations, world)
+	m.mu.Unlock()
+	if m.filePath != "" {
+		if err := m.Save(); err != nil && m.logger != nil {
+			m.logger.Printf("failed to save settings after clearing map locations: %v", err)
+		}
+	}
 }

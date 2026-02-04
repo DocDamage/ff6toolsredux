@@ -267,34 +267,6 @@ func TestSyncStatus(t *testing.T) {
 	}
 }
 
-// TestProviderConfig tests provider configuration
-// TODO: This test references non-existent NewProviderConfig function
-// It should be updated or removed when provider configuration is finalized
-/*
-func TestProviderConfig(t *testing.T) {
-	cfg := NewProviderConfig("Google Drive")
-
-	if cfg.ProviderName != "Google Drive" {
-		t.Errorf("unexpected provider name: %s", cfg.ProviderName)
-	}
-	if cfg.Enabled {
-		t.Error("provider should not be enabled by default")
-	}
-	if cfg.AutoSync {
-		t.Error("auto-sync should be disabled by default")
-	}
-	if cfg.ConflictStrategy != ConflictNewest {
-		t.Errorf("unexpected conflict strategy: %v", cfg.ConflictStrategy)
-	}
-	if cfg.MaxConcurrentUploads <= 0 {
-		t.Error("max concurrent uploads should be positive")
-	}
-	if cfg.RetryAttempts <= 0 {
-		t.Error("retry attempts should be positive")
-	}
-}
-*/
-
 // Helper function to check if a string is in a slice
 func contains(slice []string, item string) bool {
 	for _, s := range slice {

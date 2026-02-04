@@ -1,0 +1,90 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build with go:embed (default)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build with go:embed (fixed)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build with go:embed (final test)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build with go:embed (after package fix)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build with go:embed (final, assets in place)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build with go:embed (final, after user copy)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build after import cycle fix",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build after go:embed path fix",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build after removing empty file",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build after correcting go:embed path (root-relative)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build after deleting empty file (final)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build after reverting go:embed path (relative to file)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build after moving assets to embedded/resources",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build after user deleted embedded_assets.go",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build after deleting embedded_assets.go (final)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build after import path fix (module name)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		},
+		{
+			"label": "Build after user deleted embedded_assets.go (final retry)",
+			"type": "shell",
+			"command": "go build -o ff6editor_embed.exe ."
+		}
+	]
+}

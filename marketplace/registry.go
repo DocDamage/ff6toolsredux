@@ -31,7 +31,7 @@ type InstallRecord struct {
 
 // RegistryData represents the persisted registry structure
 type RegistryData struct {
-	Plugins map[string]*InstallRecord `json:"plugins"`
+	Plugins map[string]*InstallRecord  `json:"plugins"`
 	Ratings map[string][]*PluginRating `json:"ratings"`
 }
 
@@ -185,13 +185,36 @@ func (r *Registry) LoadRatings(pluginID string) ([]*PluginRating, error) {
 
 // GetCachedPlugins returns cached plugin list
 func (r *Registry) GetCachedPlugins() ([]RemotePlugin, error) {
-	// TODO: Implement cached plugin list retrieval
-	return []RemotePlugin{}, nil
+	data, err := os.ReadFile(r.cacheFile())
+	if err != nil {
+		if os.IsNotExist(err) {
+			return []RemotePlugin{}, nil
+		}
+		return nil, fmt.Errorf("failed to read plugin cache: %w", err)
+	}
+
+	var plugins []RemotePlugin
+	if err := json.Unmarshal(data, &plugins); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal plugin cache: %w", err)
+	}
+
+	return plugins, nil
 }
 
 // CachePluginList caches a list of remote plugins
 func (r *Registry) CachePluginList(plugins []RemotePlugin) error {
-	// TODO: Implement plugin list caching
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	data, err := json.MarshalIndent(plugins, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal plugin cache: %w", err)
+	}
+
+	if err := os.WriteFile(r.cacheFile(), data, 0644); err != nil {
+		return fmt.Errorf("failed to write plugin cache: %w", err)
+	}
+
 	return nil
 }
 
@@ -201,8 +224,20 @@ func (r *Registry) CheckUpdates(plugins []string) (map[string]*UpdateInfo, error
 	defer r.mu.RUnlock()
 
 	updates := make(map[string]*UpdateInfo)
-	// TODO: Implement update checking
+	// This is a local check - actual version comparison uses Client.CheckForUpdates
+	// For now, return empty map as this registry doesn't have access to remote versions
+	for _, pluginID := range plugins {
+		if _, ok := r.installedPlugins[pluginID]; !ok {
+			continue // Skip if not installed
+		}
+		// Local check only - no external version info available
+	}
 	return updates, nil
+}
+
+// cacheFile returns the path to the plugin cache file
+func (r *Registry) cacheFile() string {
+	return filepath.Join(r.path, "plugin_cache.json")
 }
 
 // MarkPluginUpdated records when a plugin was updated

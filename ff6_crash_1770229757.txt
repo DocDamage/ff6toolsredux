@@ -1,0 +1,2 @@
+Crash time: 2026-02-04T13:29:17-05:00
+Error: runtime error: invalid memory address or nil pointer dereference

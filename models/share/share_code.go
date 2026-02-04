@@ -167,7 +167,7 @@ func encodeCharacterBuild(build CharacterBuild) string {
 
 	// Encode stats (each stat is 1 hex digit, 0-9, A-F = 0-15)
 	encoded += fmt.Sprintf("%X%X%X%X%X%X",
-		build.Stats.Vigor/17,   // 0-5
+		build.Stats.Vigor/17, // 0-5
 		build.Stats.Speed/17,
 		build.Stats.Stamina/17,
 		build.Stats.MagicPwr/17,

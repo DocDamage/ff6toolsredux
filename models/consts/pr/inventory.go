@@ -2,6 +2,8 @@ package pr
 
 import (
 	"bufio"
+	"fmt"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -333,7 +335,8 @@ func loadItems(s string, byName map[string]int, byID map[int]string) {
 		sl := strings.Split(scanner.Text(), " - ")
 		if len(sl) == 2 {
 			if i, err := strconv.ParseInt(sl[0], 10, 32); err != nil {
-				panic(sl[1])
+				fmt.Fprintf(os.Stderr, "Warning: failed to parse item ID for %s: %v\n", sl[1], err)
+				continue
 			} else {
 				byName[sl[1]] = int(i)
 				byID[int(i)] = sl[1]

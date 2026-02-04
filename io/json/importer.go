@@ -35,6 +35,39 @@ func NewImporter(pr *ipr.PR) *Importer {
 	}
 }
 
+// importFunc is a function that imports a specific section
+type importFunc func(*Importer, SaveExport) error
+
+// importCharactersFunc imports character data
+func importCharactersFunc(i *Importer, export SaveExport) error {
+	return i.importCharacters(export.Characters)
+}
+
+// importPartyFunc imports party data
+func importPartyFunc(i *Importer, export SaveExport) error {
+	return i.importParty(export.Party)
+}
+
+// importInventoryFunc imports inventory data
+func importInventoryFunc(i *Importer, export SaveExport) error {
+	return i.importInventory(export.Inventory)
+}
+
+// importEquipmentFunc imports equipment data
+func importEquipmentFunc(i *Importer, export SaveExport) error {
+	return i.importEquipment(export.Equipment)
+}
+
+// importMagicFunc imports magic data
+func importMagicFunc(i *Importer, export SaveExport) error {
+	return i.importMagic(export.Magic)
+}
+
+// importEspersFunc imports esper data
+func importEspersFunc(i *Importer, export SaveExport) error {
+	return i.importEspers(export.Espers)
+}
+
 // ImportFromJSON imports save data from JSON bytes
 func (i *Importer) ImportFromJSON(jsonBytes []byte, format ExportFormat) error {
 	var export SaveExport
@@ -44,59 +77,26 @@ func (i *Importer) ImportFromJSON(jsonBytes []byte, format ExportFormat) error {
 
 	i.errors = make([]ImportError, 0)
 
-	switch format {
-	case FormatFull:
-		if err := i.importCharacters(export.Characters); err != nil {
-			return err
-		}
-		if err := i.importParty(export.Party); err != nil {
-			return err
-		}
-		if err := i.importInventory(export.Inventory); err != nil {
-			return err
-		}
-		if err := i.importEquipment(export.Equipment); err != nil {
-			return err
-		}
-		if err := i.importMagic(export.Magic); err != nil {
-			return err
-		}
-		if err := i.importEspers(export.Espers); err != nil {
-			return err
-		}
+	// Map of format to import functions
+	formatImporters := map[ExportFormat][]importFunc{
+		FormatFull:       {importCharactersFunc, importPartyFunc, importInventoryFunc, importEquipmentFunc, importMagicFunc, importEspersFunc},
+		FormatCharacters: {importCharactersFunc},
+		FormatInventory:  {importInventoryFunc},
+		FormatParty:      {importPartyFunc},
+		FormatMagic:      {importMagicFunc},
+		FormatEspers:     {importEspersFunc},
+		FormatEquipment:  {importEquipmentFunc},
+	}
 
-	case FormatCharacters:
-		if err := i.importCharacters(export.Characters); err != nil {
-			return err
-		}
-
-	case FormatInventory:
-		if err := i.importInventory(export.Inventory); err != nil {
-			return err
-		}
-
-	case FormatParty:
-		if err := i.importParty(export.Party); err != nil {
-			return err
-		}
-
-	case FormatMagic:
-		if err := i.importMagic(export.Magic); err != nil {
-			return err
-		}
-
-	case FormatEspers:
-		if err := i.importEspers(export.Espers); err != nil {
-			return err
-		}
-
-	case FormatEquipment:
-		if err := i.importEquipment(export.Equipment); err != nil {
-			return err
-		}
-
-	default:
+	importers, ok := formatImporters[format]
+	if !ok {
 		return fmt.Errorf("unknown import format: %s", format)
+	}
+
+	for _, importer := range importers {
+		if err := importer(i, export); err != nil {
+			return err
+		}
 	}
 
 	// Return errors if any occurred

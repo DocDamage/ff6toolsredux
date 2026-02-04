@@ -506,7 +506,7 @@ func TestEndToEndUpdate(t *testing.T)
 
 ## Configuration
 
-### Editor Config (`ff6editor.config`)
+### Editor Config (`ff6editor.settings.json`)
 ```ini
 [marketplace]
 enabled=true

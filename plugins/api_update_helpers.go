@@ -2,9 +2,9 @@ package plugins
 
 import (
 	"encoding/json"
-	"fmt"
 	"ffvi_editor/models"
 	modelsPR "ffvi_editor/models/pr"
+	"fmt"
 	jo "gitlab.com/c0b/go-ordered-json"
 )
 
@@ -25,7 +25,7 @@ func (a *APIImpl) updateParameter(charMap *jo.OrderedMap, char *models.Character
 
 	// Update HP
 	paramMap.Set("currentHP", json.Number(fmt.Sprintf("%d", char.HP.Current)))
-	
+
 	// Calculate additional max HP (subtract base from max)
 	additionalMaxHP := char.HP.Max
 	if baseOffset != nil {
@@ -35,7 +35,7 @@ func (a *APIImpl) updateParameter(charMap *jo.OrderedMap, char *models.Character
 
 	// Update MP
 	paramMap.Set("currentMP", json.Number(fmt.Sprintf("%d", char.MP.Current)))
-	
+
 	// Calculate additional max MP (subtract base from max)
 	additionalMaxMP := char.MP.Max
 	if baseOffset != nil {
@@ -74,10 +74,10 @@ func (a *APIImpl) updateParameter(charMap *jo.OrderedMap, char *models.Character
 func (a *APIImpl) updateEquipment(charMap *jo.OrderedMap, char *models.Character) error {
 	// Create equipment structure
 	eqMap := jo.NewOrderedMap()
-	
+
 	// Create values array with equipment slots
 	values := make([]interface{}, 6)
-	
+
 	// Equipment slots: 0=Weapon, 1=Shield, 2=Armor, 3=Helmet, 4=Relic1, 5=Relic2
 	equipmentIDs := []int{
 		char.Equipment.WeaponID,
@@ -114,7 +114,7 @@ func (a *APIImpl) updateEquipment(charMap *jo.OrderedMap, char *models.Character
 func (a *APIImpl) updateSpells(charMap *jo.OrderedMap, char *models.Character) error {
 	// Create ability list structure
 	abilityMap := jo.NewOrderedMap()
-	
+
 	// Build array of spell JSONs
 	var values []interface{}
 

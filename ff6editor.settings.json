@@ -1,0 +1,74 @@
+{
+  "theme": "dark",
+  "language": "en",
+  "autoSave": false,
+  "autoSaveDelay": 30,
+  "autoBackup": true,
+  "backupsToKeep": 10,
+  "backupLocation": "",
+  "validationLevel": "normal",
+  "autoFix": false,
+  "warnOnSave": true,
+  "cloudEnabled": false,
+  "cloudProvider": "gdrive",
+  "cloudEncrypted": true,
+  "cloudInterval": 30,
+  "showLineNumbers": true,
+  "editorFontSize": 12,
+  "windowWidth": 1200,
+  "windowHeight": 800,
+  "windowMaximized": false,
+  "confirmOnClose": true,
+  "showUndoHistory": true,
+  "maxUndoSteps": 100,
+  "enableDragDrop": true,
+  "showTooltips": true,
+  "shortcuts": {
+    "backup": "Ctrl+B",
+    "close": "Ctrl+W",
+    "find": "Ctrl+F",
+    "new": "Ctrl+N",
+    "open": "Ctrl+O",
+    "palette": "Ctrl+Shift+P",
+    "preferences": "Ctrl+,",
+    "redo": "Ctrl+Y",
+    "save": "Ctrl+S",
+    "undo": "Ctrl+Z",
+    "validate": "Ctrl+Shift+V"
+  },
+  "recentFiles": [],
+  "maxRecentFiles": 10,
+  "romPath": "",
+  "enablePlugins": true,
+  "enableScripting": true,
+  "enableAchievements": true,
+  "showDebugInfo": false,
+  "logLevel": "info",
+  "windowX": 725,
+  "windowY": 800,
+  "saveDir": "C:\\Users\\dferr\\Documents\\My Games\\FINAL FANTASY VI PR\\Steam\\76561198072182150",
+  "worldMapPoints": {
+    "1": {
+      "Figaro Castle": {
+        "x": 414,
+        "y": 512
+      },
+      "Jidoor": {
+        "x": 175,
+        "y": 837
+      },
+      "Narshe": {
+        "x": 532,
+        "y": 218
+      },
+      "Returners' Hideout": {
+        "x": 673,
+        "y": 421
+      },
+      "South Figaro": {
+        "x": 541,
+        "y": 724
+      }
+    }
+  }
+}

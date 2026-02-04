@@ -14,21 +14,21 @@ const (
 
 // ValidationIssue represents a single validation problem
 type ValidationIssue struct {
-	Rule      string              `json:"rule"`
-	Severity  ValidationSeverity  `json:"severity"`
-	Message   string              `json:"message"`
-	Target    string              `json:"target"`        // What was being validated
-	TargetID  interface{}         `json:"targetID"`      // Character index, item ID, etc
-	Fixable   bool                `json:"fixable"`
-	FixAction string              `json:"fixAction"`     // Description of fix
+	Rule      string             `json:"rule"`
+	Severity  ValidationSeverity `json:"severity"`
+	Message   string             `json:"message"`
+	Target    string             `json:"target"`   // What was being validated
+	TargetID  interface{}        `json:"targetID"` // Character index, item ID, etc
+	Fixable   bool               `json:"fixable"`
+	FixAction string             `json:"fixAction"` // Description of fix
 }
 
 // ValidationResult contains all validation results
 type ValidationResult struct {
-	Valid    bool                `json:"valid"`
-	Errors   []ValidationIssue   `json:"errors"`
-	Warnings []ValidationIssue   `json:"warnings"`
-	Infomsgs []ValidationIssue   `json:"infoMessages"`
+	Valid    bool              `json:"valid"`
+	Errors   []ValidationIssue `json:"errors"`
+	Warnings []ValidationIssue `json:"warnings"`
+	Infomsgs []ValidationIssue `json:"infoMessages"`
 }
 
 // ValidationMode determines how strict validation is
@@ -58,13 +58,13 @@ type ValidationConfig struct {
 // DefaultValidationConfig returns safe defaults
 func DefaultValidationConfig() ValidationConfig {
 	return ValidationConfig{
-		Mode:               NormalMode,
-		RealTimeValidation: true,
-		PreSaveValidation:  true,
-		MaxCharacterLevel:  99,
-		MaxCharacterHP:     9999,
-		MaxCharacterMP:     9999,
-		MaxStatValue:       255,
+		Mode:                NormalMode,
+		RealTimeValidation:  true,
+		PreSaveValidation:   true,
+		MaxCharacterLevel:   99,
+		MaxCharacterHP:      9999,
+		MaxCharacterMP:      9999,
+		MaxStatValue:        255,
 		AutoFixSimpleIssues: false,
 	}
 }

@@ -7,21 +7,21 @@ import (
 
 // HelpTopic represents a help topic
 type HelpTopic struct {
-	ID          string
-	Title       string
-	Content     string
-	Category    string
-	Keywords    []string
+	ID            string
+	Title         string
+	Content       string
+	Category      string
+	Keywords      []string
 	RelatedTopics []string
 }
 
 // Category constants
 const (
-	CategoryGettingStarted = "getting-started"
-	CategoryFeatures      = "features"
+	CategoryGettingStarted  = "getting-started"
+	CategoryFeatures        = "features"
 	CategoryTroubleshooting = "troubleshooting"
-	CategoryAPI           = "api"
-	CategoryAdvanced      = "advanced"
+	CategoryAPI             = "api"
+	CategoryAdvanced        = "advanced"
 )
 
 // HelpSystem manages help documentation
@@ -110,7 +110,7 @@ The editor is organized into several tabs:
 `,
 			Keywords: []string{"interface", "tabs", "layout", "ui"},
 		},
-		
+
 		// Features
 		{
 			ID:       "templates",
@@ -257,7 +257,7 @@ print("Terra maximized!")
 `,
 			Keywords: []string{"script", "lua", "automate", "programming"},
 		},
-		
+
 		// Troubleshooting
 		{
 			ID:       "validation_errors",

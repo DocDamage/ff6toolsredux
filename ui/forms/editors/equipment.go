@@ -29,6 +29,16 @@ type (
 )
 
 func NewEquipment(c *models.Character) *Equipment {
+	fmt.Printf("[DEBUG NewEquipment] called, c=%v\n", c != nil)
+	if c == nil {
+		fmt.Println("[DEBUG NewEquipment] WARNING: nil character")
+		return &Equipment{
+			c:       nil,
+			search:  widget.NewEntry(),
+			results: widget.NewTextGrid(),
+		}
+	}
+	fmt.Printf("[DEBUG NewEquipment] Creating equipment editor for %s\n", c.Name)
 	e := &Equipment{
 		c:       c,
 		search:  widget.NewEntry(),
@@ -61,6 +71,12 @@ func NewEquipment(c *models.Character) *Equipment {
 }
 
 func (e *Equipment) CreateRenderer() fyne.WidgetRenderer {
+	fmt.Printf("[DEBUG Equipment.CreateRenderer] called, e.c=%v\n", e.c != nil)
+	if e.c == nil {
+		fmt.Println("[DEBUG Equipment.CreateRenderer] WARNING: nil character")
+		return widget.NewSimpleRenderer(container.NewVBox(widget.NewLabel("Error: Character not found")))
+	}
+	fmt.Printf("[DEBUG Equipment.CreateRenderer] Rendering equipment for %s\n", e.c.Name)
 	e.weaponEntry = inputs.NewIntEntryWithData(&e.c.Equipment.WeaponID)
 	e.shieldEntry = inputs.NewIntEntryWithData(&e.c.Equipment.ShieldID)
 	e.helmetEntry = inputs.NewIntEntryWithData(&e.c.Equipment.HelmetID)

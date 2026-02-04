@@ -43,10 +43,10 @@ func initializeEspers() map[int]*EsperEntry {
 	espers := make(map[int]*EsperEntry)
 
 	espers[1] = &EsperEntry{
-		ID:        1,
-		Name:      "Ramuh",
-		Learned:   false,
-		Level:     1,
+		ID:           1,
+		Name:         "Ramuh",
+		Learned:      false,
+		Level:        1,
 		MagicLearned: []string{"Bolt", "Bolt 2", "Bolt 3"},
 		StatGrowth: StatGrowth{
 			Vigor:    0,
@@ -60,10 +60,10 @@ func initializeEspers() map[int]*EsperEntry {
 	}
 
 	espers[2] = &EsperEntry{
-		ID:       2,
-		Name:     "Ifrit",
-		Learned:  false,
-		Level:    1,
+		ID:           2,
+		Name:         "Ifrit",
+		Learned:      false,
+		Level:        1,
 		MagicLearned: []string{"Fire", "Fire 2", "Fire 3"},
 		StatGrowth: StatGrowth{
 			Vigor:    2,
@@ -77,10 +77,10 @@ func initializeEspers() map[int]*EsperEntry {
 	}
 
 	espers[3] = &EsperEntry{
-		ID:       3,
-		Name:     "Shiva",
-		Learned:  false,
-		Level:    1,
+		ID:           3,
+		Name:         "Shiva",
+		Learned:      false,
+		Level:        1,
 		MagicLearned: []string{"Ice", "Ice 2", "Ice 3"},
 		StatGrowth: StatGrowth{
 			Vigor:    0,
@@ -94,10 +94,10 @@ func initializeEspers() map[int]*EsperEntry {
 	}
 
 	espers[4] = &EsperEntry{
-		ID:       4,
-		Name:     "Golem",
-		Learned:  false,
-		Level:    1,
+		ID:           4,
+		Name:         "Golem",
+		Learned:      false,
+		Level:        1,
 		MagicLearned: []string{"Stone", "Stone 2"},
 		StatGrowth: StatGrowth{
 			Vigor:    1,
@@ -111,10 +111,10 @@ func initializeEspers() map[int]*EsperEntry {
 	}
 
 	espers[5] = &EsperEntry{
-		ID:       5,
-		Name:     "Alexander",
-		Learned:  false,
-		Level:    1,
+		ID:           5,
+		Name:         "Alexander",
+		Learned:      false,
+		Level:        1,
 		MagicLearned: []string{"Pearl", "Pearl 2"},
 		StatGrowth: StatGrowth{
 			Vigor:    0,
@@ -128,10 +128,10 @@ func initializeEspers() map[int]*EsperEntry {
 	}
 
 	espers[6] = &EsperEntry{
-		ID:       6,
-		Name:     "Tritoch",
-		Learned:  false,
-		Level:    1,
+		ID:           6,
+		Name:         "Tritoch",
+		Learned:      false,
+		Level:        1,
 		MagicLearned: []string{"Fire 2", "Ice 2", "Bolt 2"},
 		StatGrowth: StatGrowth{
 			Vigor:    0,
@@ -145,10 +145,10 @@ func initializeEspers() map[int]*EsperEntry {
 	}
 
 	espers[7] = &EsperEntry{
-		ID:       7,
-		Name:     "Kirin",
-		Learned:  false,
-		Level:    1,
+		ID:           7,
+		Name:         "Kirin",
+		Learned:      false,
+		Level:        1,
 		MagicLearned: []string{"Imp", "Float"},
 		StatGrowth: StatGrowth{
 			Vigor:    0,
@@ -162,10 +162,10 @@ func initializeEspers() map[int]*EsperEntry {
 	}
 
 	espers[8] = &EsperEntry{
-		ID:       8,
-		Name:     "Unicorn",
-		Learned:  false,
-		Level:    1,
+		ID:           8,
+		Name:         "Unicorn",
+		Learned:      false,
+		Level:        1,
 		MagicLearned: []string{"Purify", "Esuna"},
 		StatGrowth: StatGrowth{
 			Vigor:    0,
@@ -182,10 +182,10 @@ func initializeEspers() map[int]*EsperEntry {
 	// Total of 27 espers
 
 	espers[27] = &EsperEntry{
-		ID:       27,
-		Name:     "Neo Bahamut",
-		Learned:  false,
-		Level:    1,
+		ID:           27,
+		Name:         "Neo Bahamut",
+		Learned:      false,
+		Level:        1,
 		MagicLearned: []string{"Bahamut", "Mega Flare"},
 		StatGrowth: StatGrowth{
 			Vigor:    3,
@@ -203,12 +203,12 @@ func initializeEspers() map[int]*EsperEntry {
 
 // LevelingSequence represents a planned sequence of espers to equip during level-up
 type LevelingSequence struct {
-	Character      string
-	StartLevel     uint8
-	EndLevel       uint8
-	Sequence       []*EsperEntry
-	TotalBonus     StatGrowth
-	EstimatedTime  string
+	Character     string
+	StartLevel    uint8
+	EndLevel      uint8
+	Sequence      []*EsperEntry
+	TotalBonus    StatGrowth
+	EstimatedTime string
 }
 
 // CalculateTotalBonus calculates total stat bonuses from a sequence

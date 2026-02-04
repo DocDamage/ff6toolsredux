@@ -1,0 +1,19 @@
+[13:29:15.854] [INIT] Log file: C:\Users\dferr\AppData\Local\Temp\ff6_editor_1770229755.log
+[13:29:15.859] [MAIN] Starting FFVI Save Editor
+[13:29:17.664] [Load] Starting load: name=slot 6, dir=C:\Users\dferr\Documents\My Games\FINAL FANTASY VI PR\Steam\76561198072182150, file=UWtRedIOaeA6ig=8r6DIvxg33X92oMM9P8JBwiag4d0=, type=0
+[13:29:17.671] [Load] Creating PR instance
+[13:29:17.675] [Load] Loading file: C:\Users\dferr\Documents\My Games\FINAL FANTASY VI PR\Steam\76561198072182150\UWtRedIOaeA6ig=8r6DIvxg33X92oMM9P8JBwiag4d0=
+[13:29:17.687] [Load] File loaded successfully
+[13:29:17.690] [Load] Clearing canvas...
+[13:29:17.692] [Load] Creating editor...
+[13:29:17.694] [Editor] Creating main editor tabs...
+[13:29:17.696] [Editor] Creating Characters tab...
+[13:29:17.698] [Characters] Selected character: 'Celes'
+[13:29:17.700] [Characters] Found character: ID=25, RootName=Celes
+[13:29:17.708] [Load] Cleanup completed
+[13:29:17.710] [Load] PANIC: runtime error: invalid memory address or nil pointer dereference
+[13:29:17.714] [Editor] Creating main editor tabs...
+[13:29:17.716] [Editor] Creating Characters tab...
+[13:29:17.719] [Characters] Selected character: 'Celes'
+[13:29:17.721] [Characters] Found character: ID=25, RootName=Celes
+[13:29:17.726] [PANIC] Fatal error: runtime error: invalid memory address or nil pointer dereference

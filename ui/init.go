@@ -1,9 +1,16 @@
 package ui
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	"ffvi_editor/achievements"
+	"ffvi_editor/cloud"
+	"ffvi_editor/global"
+	"ffvi_editor/io/config"
+	"ffvi_editor/plugins"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 )
@@ -22,7 +29,7 @@ func (g *gui) initializeSettings() error {
 	// Start auto-save if enabled
 	s := g.settingsManager.Get()
 	if s != nil && s.AutoSave {
-		// TODO: Start auto-save timer
+		g.startAutoSave(time.Duration(s.AutoSaveDelay) * time.Second)
 	}
 
 	return nil
@@ -46,7 +53,60 @@ func (g *gui) applySettings() {
 
 	// Apply font size
 	if s.EditorFontSize > 0 {
-		// TODO: Apply font size to editor
+		// Store font size in global config for use by editors
+		config.SetFontSize(s.EditorFontSize)
+	}
+}
+
+// startAutoSave starts the auto-save timer with the specified interval
+func (g *gui) startAutoSave(interval time.Duration) {
+	if g.autoSaveTicker != nil {
+		g.stopAutoSave <- true
+		g.autoSaveTicker.Stop()
+	}
+
+	g.autoSaveTicker = time.NewTicker(interval)
+	g.stopAutoSave = make(chan bool)
+
+	go func() {
+		for {
+			select {
+			case <-g.autoSaveTicker.C:
+				g.performAutoSave()
+			case <-g.stopAutoSave:
+				return
+			}
+		}
+	}()
+}
+
+// stopAutoSaveTimer stops the auto-save timer
+func (g *gui) stopAutoSaveTimer() {
+	if g.autoSaveTicker != nil {
+		g.autoSaveTicker.Stop()
+		if g.stopAutoSave != nil {
+			select {
+			case g.stopAutoSave <- true:
+			default:
+			}
+		}
+		g.autoSaveTicker = nil
+	}
+}
+
+// performAutoSave performs the auto-save operation
+func (g *gui) performAutoSave() {
+	if g.pr == nil {
+		return
+	}
+
+	// Create auto-save filename
+	autoSavePath := global.PWD + "/autosave.json"
+	if err := g.pr.Save(0, autoSavePath, 0); err != nil {
+		// Silently log error - don't disturb user with dialogs for auto-save
+		fmt.Printf("Auto-save failed: %v\n", err)
+	} else {
+		fmt.Printf("Auto-saved to: %s\n", autoSavePath)
 	}
 }
 
@@ -106,16 +166,80 @@ func (g *gui) showAchievementUnlock(achievement *achievements.Achievement) {
 
 // saveSettings persists current settings to file
 func (g *gui) saveSettings() error {
-	// TODO: Implement settings persistence
-	return nil
+	return g.settingsManager.Save()
 }
 
 // initializeCloudSync initializes cloud synchronization if enabled
 func (g *gui) initializeCloudSync() {
-	// TODO: Initialize cloud sync if enabled
+	s := g.settingsManager.Get()
+	if s == nil || !s.CloudEnabled {
+		return
+	}
+
+	g.cloudManager = cloud.New()
+
+	// Register cloud providers based on settings
+	if s.DropboxEnabled {
+		dropboxProvider := cloud.NewDropboxProvider(s.DropboxAppKey, s.DropboxAppSecret)
+		if err := g.cloudManager.RegisterProvider(dropboxProvider); err != nil {
+			fmt.Printf("Failed to register Dropbox provider: %v\n", err)
+		}
+	}
+
+	if s.GoogleDriveClientID != "" {
+		gdriveProvider := cloud.NewGoogleDriveProvider(s.GoogleDriveClientID, s.GoogleDriveClientSecret)
+		if err := g.cloudManager.RegisterProvider(gdriveProvider); err != nil {
+			fmt.Printf("Failed to register Google Drive provider: %v\n", err)
+		}
+	}
+
+	fmt.Println("Cloud sync initialized")
 }
 
 // initializePlugins initializes the plugin system if enabled
 func (g *gui) initializePlugins() {
-	// TODO: Initialize plugins if enabled
+	s := g.settingsManager.Get()
+	if s == nil || !s.EnablePlugins {
+		return
+	}
+
+	// Create a basic plugin API - plugins won't have access to save data
+	// until a file is loaded, but they can be initialized
+	api := plugins.NewAPIImpl(nil, []string{
+		plugins.CommonPermissions.ReadSave,
+		plugins.CommonPermissions.UIDisplay,
+	})
+
+	// Set up logging
+	api.SetLogger(func(level, msg string) {
+		fmt.Printf("[Plugin %s] %s\n", level, msg)
+	})
+
+	g.pluginManager = plugins.NewManager(global.PWD+"/plugins", api)
+
+	// Start the plugin manager
+	ctx := context.Background()
+	if err := g.pluginManager.Start(ctx); err != nil {
+		fmt.Printf("Failed to start plugin manager: %v\n", err)
+		return
+	}
+
+	fmt.Println("Plugins initialized")
+}
+
+// cleanup performs cleanup before application exit
+func (g *gui) cleanup() {
+	g.stopAutoSaveTimer()
+
+	if g.cloudManager != nil {
+		// Perform final cloud sync if needed
+	}
+
+	if g.pluginManager != nil {
+		ctx := context.Background()
+		_ = g.pluginManager.Stop(ctx)
+	}
+
+	// Save settings before exit
+	_ = g.saveSettings()
 }

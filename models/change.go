@@ -6,15 +6,15 @@ import (
 
 // Change represents a single edit operation that can be undone/redone
 type Change struct {
-	ID        string        `json:"id"`
-	Timestamp time.Time     `json:"timestamp"`
-	Target    string        `json:"target"`        // "Character", "Inventory", etc
-	FieldName string        `json:"fieldName"`     // e.g., "HP", "Level"
-	OldValue  interface{}   `json:"oldValue"`
-	NewValue  interface{}   `json:"newValue"`
-	Batch     bool          `json:"batch"`         // Part of batch operation?
-	BatchID   string        `json:"batchID"`       // Groups multiple changes
-	BatchName string        `json:"batchName"`     // User-friendly batch name
+	ID        string      `json:"id"`
+	Timestamp time.Time   `json:"timestamp"`
+	Target    string      `json:"target"`    // "Character", "Inventory", etc
+	FieldName string      `json:"fieldName"` // e.g., "HP", "Level"
+	OldValue  interface{} `json:"oldValue"`
+	NewValue  interface{} `json:"newValue"`
+	Batch     bool        `json:"batch"`     // Part of batch operation?
+	BatchID   string      `json:"batchID"`   // Groups multiple changes
+	BatchName string      `json:"batchName"` // User-friendly batch name
 }
 
 // ChangeGroup represents multiple changes that should be undone together

@@ -69,4 +69,3 @@ func RemoveMapLocation(world int, name string) {
 	data.WorldMapLocations[world] = out
 	save()
 }
-

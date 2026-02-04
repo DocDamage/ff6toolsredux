@@ -120,7 +120,7 @@ func (d *PluginBrowserDialog) buildHeader() *fyne.Container {
 	d.searchEntry = widget.NewEntry()
 	d.searchEntry.SetPlaceHolder("Search plugins...")
 	// Don't set OnChanged yet - set it after all widgets are created
-	
+
 	// Category selector
 	categories := []string{
 		"All Categories",

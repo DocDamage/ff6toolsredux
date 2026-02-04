@@ -8,18 +8,18 @@ import (
 
 // CharacterTemplate holds a saved character build that can be applied to other characters
 type CharacterTemplate struct {
-	ID          string      `json:"id"`
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Character   *models.Character   `json:"character"`
-	Equipment   *models.Equipment   `json:"equipment"`
-	Spells      []*models.Spell     `json:"spells"`
-	Commands    []*models.Command   `json:"commands"`
-	CreatedAt   time.Time   `json:"createdAt"`
-	UpdatedAt   time.Time   `json:"updatedAt"`
-	Tags        []string    `json:"tags"`
-	Favorite    bool        `json:"favorite"`
-	Version     int         `json:"version"`
+	ID          string            `json:"id"`
+	Name        string            `json:"name"`
+	Description string            `json:"description"`
+	Character   *models.Character `json:"character"`
+	Equipment   *models.Equipment `json:"equipment"`
+	Spells      []*models.Spell   `json:"spells"`
+	Commands    []*models.Command `json:"commands"`
+	CreatedAt   time.Time         `json:"createdAt"`
+	UpdatedAt   time.Time         `json:"updatedAt"`
+	Tags        []string          `json:"tags"`
+	Favorite    bool              `json:"favorite"`
+	Version     int               `json:"version"`
 }
 
 // NewCharacterTemplate creates a new template from an existing character
@@ -42,12 +42,12 @@ func NewCharacterTemplate(char *models.Character, name, description string, tags
 			Magic:    char.Magic,
 		},
 		Equipment: &models.Equipment{
-			WeaponID:  char.Equipment.WeaponID,
-			ShieldID:  char.Equipment.ShieldID,
-			HelmetID:  char.Equipment.HelmetID,
-			ArmorID:   char.Equipment.ArmorID,
-			Relic1ID:  char.Equipment.Relic1ID,
-			Relic2ID:  char.Equipment.Relic2ID,
+			WeaponID: char.Equipment.WeaponID,
+			ShieldID: char.Equipment.ShieldID,
+			HelmetID: char.Equipment.HelmetID,
+			ArmorID:  char.Equipment.ArmorID,
+			Relic1ID: char.Equipment.Relic1ID,
+			Relic2ID: char.Equipment.Relic2ID,
 		},
 		Spells:    copySpells(char.SpellsByIndex),
 		Commands:  copyCommands(char.Commands),

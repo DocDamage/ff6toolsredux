@@ -221,7 +221,7 @@ func SafeUnmarshalJSON(dest interface{}, jsonData string, context string) error 
 	switch v := dest.(type) {
 	case *jo.OrderedMap:
 		return v.UnmarshalJSON(data)
-	case interface{} /* generic JSON */:
+	case interface{} /* generic JSON */ :
 		return json.Unmarshal(data, v)
 	default:
 		return json.Unmarshal(data, dest)

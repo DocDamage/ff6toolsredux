@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -23,6 +24,7 @@ type (
 		SaveDir             string                      `json:"dir"`
 		AutoEnableCmd       bool                        `json:"autoEnableCmd"`
 		EnablePlayStation   bool                        `json:"ps"`
+		FontSize            int                         `json:"fontSize,omitempty"`
 		WorldMapPoints      map[int]map[string]MapPoint `json:"worldMapPoints,omitempty"`
 		WorldMapLocations   map[int][]string            `json:"worldMapLocations,omitempty"`
 		MarketplaceSettings MarketplaceConfig           `json:"marketplaceSettings,omitempty"`
@@ -31,7 +33,9 @@ type (
 
 func init() {
 	if b, err := os.ReadFile(filepath.Join(global.PWD, file)); err == nil {
-		_ = json.Unmarshal(b, &data)
+		if err := json.Unmarshal(b, &data); err != nil {
+			log.Printf("[config] failed to parse config file: %v", err)
+		}
 	}
 	if data.WindowX == 0 {
 		data.WindowX = global.WindowWidth
@@ -78,18 +82,33 @@ func SetEnablePlayStation(v bool) {
 	save()
 }
 
+// FontSize returns the configured font size
+func FontSize() int {
+	if data.FontSize == 0 {
+		return 12 // Default font size
+	}
+	return data.FontSize
+}
+
+// SetFontSize sets the font size
+func SetFontSize(size int) {
+	data.FontSize = size
+	save()
+}
+
 func save() {
-	if f, e1 := os.Create(filepath.Join(global.PWD, "ff6editor.config")); e1 == nil {
-		if data.WindowX == 0 {
-			data.WindowX = global.WindowWidth
-		}
-		if data.WindowY == 0 {
-			data.WindowY = global.WindowHeight
-		}
-		b, err := json.Marshal(&data)
-		if err == nil {
-			_ = os.WriteFile(filepath.Join(global.PWD, file), b, 0755)
-		}
-		_, _ = f.Write(b)
+	if data.WindowX == 0 {
+		data.WindowX = global.WindowWidth
+	}
+	if data.WindowY == 0 {
+		data.WindowY = global.WindowHeight
+	}
+	b, err := json.Marshal(&data)
+	if err != nil {
+		log.Printf("[config] failed to marshal config data: %v", err)
+		return
+	}
+	if err := os.WriteFile(filepath.Join(global.PWD, file), b, 0755); err != nil {
+		log.Printf("[config] failed to write config file: %v", err)
 	}
 }

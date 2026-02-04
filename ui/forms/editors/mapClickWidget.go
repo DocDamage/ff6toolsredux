@@ -113,9 +113,28 @@ func (w *MapClickWidget) Tapped(ev *fyne.PointEvent) {
 	if px < 0 || py < 0 || px > w.renderImgSize.Width || py > w.renderImgSize.Height {
 		return // Click outside rendered image
 	}
-	x := int(px * float32(w.imgWidth) / w.renderImgSize.Width)
-	y := int(py * float32(w.imgHeight) / w.renderImgSize.Height)
-	w.onClick(x, y)
+	
+	// Convert to image pixel coordinates (0 to imgWidth/imgHeight)
+	x := float64(px) * float64(w.imgWidth) / float64(w.renderImgSize.Width)
+	y := float64(py) * float64(w.imgHeight) / float64(w.renderImgSize.Height)
+	
+	// Clamp to valid range
+	if x < 0 {
+		x = 0
+	} else if x > float64(w.imgWidth-1) {
+		x = float64(w.imgWidth - 1)
+	}
+	if y < 0 {
+		y = 0
+	} else if y > float64(w.imgHeight-1) {
+		y = float64(w.imgHeight - 1)
+	}
+	
+	w.markerX = x
+	w.markerY = y
+	w.showMarker = true
+	w.Refresh()
+	w.onClick(int(x), int(y))
 }
 
 func (w *MapClickWidget) Dragged(ev *fyne.DragEvent) {
@@ -164,8 +183,11 @@ func (r *mapClickWidgetRenderer) Layout(size fyne.Size) {
 	r.w.img.Resize(imgSize)
 
 	if r.w.showMarker && r.w.markerX >= 0 && r.w.markerY >= 0 {
-		mx := imgPos.X + (float32(r.w.markerX)/imgW)*drawW - 6
-		my := imgPos.Y + (float32(r.w.markerY)/imgH)*drawH - 6
+		// Convert marker position from image coords to screen coords
+		// markerX/Y are in image pixel coordinates (0 to imgWidth/imgHeight)
+		mx := imgPos.X + float32(r.w.markerX/float64(r.w.imgWidth))*drawW - 6
+		my := imgPos.Y + float32(r.w.markerY/float64(r.w.imgHeight))*drawH - 6
+
 		r.marker.Move(fyne.NewPos(mx, my))
 		r.marker.Show()
 	} else {
@@ -226,22 +248,18 @@ func loadMapImage(imgPath string) (image.Image, int, int) {
 	fmt.Printf("[DEBUG] Attempting to open map image: %s (resolved: %s, cwd: %s)\n", imgPath, resolvedPath, absPath)
 
 	file, err := os.Open(resolvedPath)
-	if err != nil {
-		fmt.Printf("[ERROR] Failed to open map image: %s (resolved: %s, cwd: %s): %v\n", imgPath, resolvedPath, absPath, err)
-		blank := image.NewNRGBA(image.Rect(0, 0, 1, 1))
-		return blank, 1, 1
+	if err == nil {
+		defer file.Close()
+		img, _, err := image.Decode(file)
+		if err == nil {
+			width := img.Bounds().Dx()
+			height := img.Bounds().Dy()
+			fmt.Printf("[DEBUG] Successfully loaded map image: %s (resolved: %s, %dx%d)\n", imgPath, resolvedPath, width, height)
+			return img, width, height
+		}
 	}
-	defer file.Close()
-
-	img, _, err := image.Decode(file)
-	if err != nil {
-		fmt.Printf("[ERROR] Failed to decode map image: %s (resolved: %s, cwd: %s): %v\n", imgPath, resolvedPath, absPath, err)
-		blank := image.NewNRGBA(image.Rect(0, 0, 1, 1))
-		return blank, 1, 1
-	}
-
-	width := img.Bounds().Dx()
-	height := img.Bounds().Dy()
-	fmt.Printf("[DEBUG] Successfully loaded map image: %s (resolved: %s, %dx%d)\n", imgPath, resolvedPath, width, height)
-	return img, width, height
+	// Fallback: blank image
+	fmt.Printf("[ERROR] Failed to load map image: %s (resolved: %s, cwd: %s)\n", imgPath, resolvedPath, absPath)
+	blank := image.NewNRGBA(image.Rect(0, 0, 1, 1))
+	return blank, 1, 1
 }

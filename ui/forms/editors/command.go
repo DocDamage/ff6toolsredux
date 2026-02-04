@@ -1,6 +1,7 @@
 package editors
 
 import (
+	"fmt"
 	"slices"
 
 	"ffvi_editor/models"
@@ -22,6 +23,14 @@ type (
 )
 
 func NewCommands(c *models.Character) *Commands {
+	fmt.Printf("[DEBUG NewCommands] called, c=%v\n", c != nil)
+	if c == nil {
+		fmt.Println("[DEBUG NewCommands] WARNING: nil character")
+		return &Commands{
+			selections: nil,
+		}
+	}
+	fmt.Printf("[DEBUG NewCommands] Creating commands editor for %s with %d commands\n", c.Name, len(c.Commands))
 	e := &Commands{
 		selections: make([]cmdSelect, len(c.Commands)),
 	}
@@ -38,6 +47,12 @@ func NewCommands(c *models.Character) *Commands {
 }
 
 func (e *Commands) CreateRenderer() fyne.WidgetRenderer {
+	fmt.Printf("[DEBUG Commands.CreateRenderer] called, selections=%v\n", e.selections != nil)
+	if e.selections == nil {
+		fmt.Println("[DEBUG Commands.CreateRenderer] WARNING: nil selections")
+		return widget.NewSimpleRenderer(container.NewVBox(widget.NewLabel("Error: Character not found")))
+	}
+	fmt.Println("[DEBUG Commands.CreateRenderer] Rendering commands")
 	c := container.NewVBox(
 		widget.NewLabel("Warning: can cause soft locks and crashing in game."))
 	for i, s := range e.selections {

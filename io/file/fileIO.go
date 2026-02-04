@@ -36,9 +36,12 @@ func LoadFile(fromFile string, saveType global.SaveFileType) (out []byte, trimme
 		b = append(b, '=')
 	}
 	// Decode
-	b, _ = base64.StdEncoding.DecodeString(string(b))
+	b, err = base64.StdEncoding.DecodeString(string(b))
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to decode base64: %w", err)
+	}
 	if len(b) == 0 {
-		err = errors.New("unable to load file")
+		err = errors.New("unable to load file: empty after decode")
 		return
 	}
 	// Decrypt
@@ -48,7 +51,11 @@ func LoadFile(fromFile string, saveType global.SaveFileType) (out []byte, trimme
 
 	// Flate
 	zr := flate.NewReader(bytes.NewReader(b))
-	defer func() { _ = zr.Close() }()
+	defer func() {
+		if closeErr := zr.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("failed to close flate reader: %w", closeErr)
+		}
+	}()
 	out, err = io.ReadAll(zr)
 	printFile("loaded.json", out)
 	return
@@ -68,8 +75,12 @@ func SaveFile(data []byte, toFile string, trimmed []byte, saveType global.SaveFi
 		if _, err = zw.Write(data); err != nil {
 			return
 		}
-		_ = zw.Flush()
-		_ = zw.Close()
+		if err = zw.Flush(); err != nil {
+			return fmt.Errorf("failed to flush compression writer: %v", err)
+		}
+		if err = zw.Close(); err != nil {
+			return fmt.Errorf("failed to close compression writer: %v", err)
+		}
 
 		// Encrypt
 		if data, err = rijndael.New().Encrypt(b.Bytes()); err != nil {
@@ -88,13 +99,8 @@ func SaveFile(data []byte, toFile string, trimmed []byte, saveType global.SaveFi
 			data = []byte(s)
 		}
 	}
-	// Write to file
-	if _, err = os.Stat(toFile); errors.Is(err, os.ErrNotExist) {
-		if _, err = os.Create(toFile); err != nil {
-			return fmt.Errorf("failed to create save file %s: %v", toFile, err)
-		}
-	}
-	if err = os.WriteFile(toFile, data, 0777); err != nil {
+	// Write to file (os.WriteFile handles file creation)
+	if err = os.WriteFile(toFile, data, 0644); err != nil {
 		return fmt.Errorf("failed to write save file %s: %v", toFile, err)
 	}
 	return

@@ -9,6 +9,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -563,75 +565,302 @@ func (c *Client) SetCacheTTL(ttl time.Duration) {
 // compareVersions compares two semantic versions
 // Returns: >0 if v1 > v2, 0 if equal, <0 if v1 < v2
 func compareVersions(v1, v2 string) int {
-	// Simple version comparison (major.minor.patch)
-	// In production, use a proper semver library
-	if v1 == v2 {
-		return 0
+	// Split versions
+	parts1 := strings.Split(v1, ".")
+	parts2 := strings.Split(v2, ".")
+
+	// Compare up to 3 parts (major, minor, patch)
+	for i := 0; i < 3; i++ {
+		var n1, n2 int
+		if i < len(parts1) {
+			n1, _ = strconv.Atoi(parts1[i])
+		}
+		if i < len(parts2) {
+			n2, _ = strconv.Atoi(parts2[i])
+		}
+		if n1 > n2 {
+			return 1
+		}
+		if n1 < n2 {
+			return -1
+		}
 	}
-	// Convert to timestamps for now
-	// TODO: Implement proper semantic version comparison
 	return 0
 }
 
 // GetPreset retrieves a preset by ID
 func (c *Client) GetPreset(id string) (*Preset, error) {
-	// TODO: Implement API call
-	return nil, nil
+	reqURL := fmt.Sprintf("%s/presets/%s", c.baseURL, url.PathEscape(id))
+
+	resp, err := c.doRequest("GET", reqURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, fmt.Errorf("preset not found: %s", id)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to get preset: %d: %s", resp.StatusCode, string(body))
+	}
+
+	var preset Preset
+	if err := json.NewDecoder(resp.Body).Decode(&preset); err != nil {
+		return nil, fmt.Errorf("failed to decode preset: %w", err)
+	}
+
+	return &preset, nil
 }
 
 // UploadPreset uploads a new preset
 func (c *Client) UploadPreset(preset *Preset) error {
-	// TODO: Implement API call
+	body, err := json.Marshal(preset)
+	if err != nil {
+		return fmt.Errorf("failed to marshal preset: %w", err)
+	}
+
+	reqURL := fmt.Sprintf("%s/presets", c.baseURL)
+
+	resp, err := c.doRequest("POST", reqURL, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("upload failed: %d: %s", resp.StatusCode, string(body))
+	}
+
 	return nil
 }
 
 // UpdatePreset updates an existing preset
 func (c *Client) UpdatePreset(preset *Preset) error {
-	// TODO: Implement API call
+	// Update the UpdatedAt timestamp before sending
+	preset.UpdatedAt = time.Now()
+
+	body, err := json.Marshal(preset)
+	if err != nil {
+		return fmt.Errorf("failed to marshal preset: %w", err)
+	}
+
+	reqURL := fmt.Sprintf("%s/presets/%s", c.baseURL, url.PathEscape(preset.ID))
+
+	resp, err := c.doRequest("PUT", reqURL, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return fmt.Errorf("preset not found: %s", preset.ID)
+	}
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("update failed: %d: %s", resp.StatusCode, string(body))
+	}
+
 	return nil
 }
 
 // DeletePreset deletes a preset
 func (c *Client) DeletePreset(id string) error {
-	// TODO: Implement API call
+	reqURL := fmt.Sprintf("%s/presets/%s", c.baseURL, url.PathEscape(id))
+
+	resp, err := c.doRequest("DELETE", reqURL, nil)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return fmt.Errorf("preset not found: %s", id)
+	}
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("delete failed: %d: %s", resp.StatusCode, string(body))
+	}
+
 	return nil
 }
 
 // DownloadPreset downloads a preset
 func (c *Client) DownloadPreset(id string) (*Preset, error) {
-	// TODO: Implement API call
-	return nil, nil
+	// DownloadPreset uses the same endpoint as GetPreset
+	return c.GetPreset(id)
 }
 
 // RatePreset rates a preset
 func (c *Client) RatePreset(id string, rating int) error {
-	// TODO: Implement API call
+	// Validate rating is 1-5
+	if rating < 1 || rating > 5 {
+		return fmt.Errorf("rating must be between 1 and 5")
+	}
+
+	body, err := json.Marshal(map[string]int{"rating": rating})
+	if err != nil {
+		return fmt.Errorf("failed to marshal rating: %w", err)
+	}
+
+	reqURL := fmt.Sprintf("%s/presets/%s/ratings", c.baseURL, id)
+
+	resp, err := c.doRequestWithContext(context.Background(), "POST", reqURL, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return fmt.Errorf("preset not found: %s", id)
+	}
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("rating submission failed: %d: %s", resp.StatusCode, string(body))
+	}
+
+	// Note: Registry currently only supports PluginRating, not preset ratings
+	// Extension to Registry would be needed for local preset rating storage
+
 	return nil
 }
 
 // AddReview adds a review
 func (c *Client) AddReview(review *Review) error {
-	// TODO: Implement API call
+	if review == nil {
+		return fmt.Errorf("review cannot be nil")
+	}
+
+	if review.PresetID == "" {
+		return fmt.Errorf("review must have a preset ID")
+	}
+
+	if review.Rating < 1 || review.Rating > 5 {
+		return fmt.Errorf("rating must be between 1 and 5")
+	}
+
+	body, err := json.Marshal(review)
+	if err != nil {
+		return fmt.Errorf("failed to marshal review: %w", err)
+	}
+
+	reqURL := fmt.Sprintf("%s/presets/%s/reviews", c.baseURL, review.PresetID)
+
+	resp, err := c.doRequestWithContext(context.Background(), "POST", reqURL, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return fmt.Errorf("preset not found: %s", review.PresetID)
+	}
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("review submission failed: %d: %s", resp.StatusCode, string(body))
+	}
+
+	// Note: Registry currently only supports PluginRating, not preset reviews
+	// Extension to Registry would be needed for local preset review storage
+
 	return nil
 }
 
 // GetReviews gets reviews for a preset
 func (c *Client) GetReviews(presetID string) ([]*Review, error) {
-	// TODO: Implement API call
-	return []*Review{}, nil
+	reqURL := fmt.Sprintf("%s/presets/%s/reviews", c.baseURL, presetID)
+
+	resp, err := c.doRequestWithContext(context.Background(), "GET", reqURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return []*Review{}, nil
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to get reviews: %d: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		Reviews []*Review `json:"reviews"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("failed to decode reviews: %w", err)
+	}
+
+	if result.Reviews == nil {
+		return []*Review{}, nil
+	}
+
+	return result.Reviews, nil
 }
 
 // GetPopular gets popular presets
 func (c *Client) GetPopular(limit int) ([]*Preset, error) {
-	// TODO: Implement API call
-	return []*Preset{}, nil
+	if limit <= 0 {
+		limit = 20
+	}
+
+	reqURL := fmt.Sprintf("%s/presets/popular?limit=%d", c.baseURL, limit)
+	resp, err := c.doRequestWithContext(context.Background(), "GET", reqURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to get popular: %d: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		Presets []*Preset `json:"presets"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("failed to decode presets: %w", err)
+	}
+	return result.Presets, nil
 }
 
 // GetRecent gets recently added presets
 func (c *Client) GetRecent(limit int) ([]*Preset, error) {
-	// TODO: Implement API call
-	return []*Preset{}, nil
+	if limit <= 0 {
+		limit = 20
+	}
+
+	reqURL := fmt.Sprintf("%s/presets/recent?limit=%d", c.baseURL, limit)
+	resp, err := c.doRequestWithContext(context.Background(), "GET", reqURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to get recent: %d: %s", resp.StatusCode, string(body))
+	}
+
+	var result struct {
+		Presets []*Preset `json:"presets"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("failed to decode presets: %w", err)
+	}
+	return result.Presets, nil
 }
+
 // Close closes the marketplace client
 func (c *Client) Close() error {
 	c.ClearCache()

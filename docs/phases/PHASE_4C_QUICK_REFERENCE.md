@@ -296,7 +296,7 @@ events
 
 ### Enable/Disable Marketplace
 ```
-ff6editor.config:
+ff6editor.settings.json:
 
 [marketplace]
 enabled=true              # Enable/disable marketplace

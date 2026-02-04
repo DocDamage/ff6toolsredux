@@ -6,7 +6,8 @@ import (
 	"os"
 
 	"ffvi_editor/global"
-	"ffvi_editor/io/config"
+	"ffvi_editor/settings"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
@@ -49,12 +50,18 @@ func NewFileIO(kind Kind, window fyne.Window, dir string, onSelected OnSelect, o
 	}
 	w.ExtendBaseWidget(w)
 	w.dir.OnChanged = w.dirChange
-	w.dir.SetText(config.SaveDir())
-	w.saveType = widget.NewSelect([]string{"PC", "Playstation"}, func(s string) {
-		config.SetEnablePlayStation(s == "Playstation")
+	// Use unified settings for SaveDir and EnablePlayStation
+	s := settings.NewManager("")
+	_ = s.Load()
+	w.dir.SetText(s.Get().SaveDir)
+	w.saveType = widget.NewSelect([]string{"PC", "Playstation"}, func(sel string) {
+		set := s.Get()
+		set.EnablePlayStation = (sel == "Playstation")
+		s.Set(set)
+		_ = s.Save()
 		w.dirChange(w.dir.Text)
 	})
-	if config.EnablePlayStation() {
+	if s.Get().EnablePlayStation {
 		w.saveType.SetSelected("Playstation")
 	} else {
 		w.saveType.SetSelected("PC")
@@ -71,7 +78,9 @@ func (w *FileIO) dirChange(s string) {
 		found    bool
 		err      error
 	)
-	if config.EnablePlayStation() {
+	sm := settings.NewManager("")
+	_ = sm.Load()
+	if sm.Get().EnablePlayStation {
 		saveType = global.PS
 	}
 	if d, err = os.ReadDir(s); err != nil {
@@ -112,9 +121,12 @@ func (w *FileIO) CreateRenderer() fyne.WidgetRenderer {
 	top := container.NewBorder(nil, nil,
 		widget.NewLabel("Directory:"),
 		widget.NewButton("Change", func() {
-			if dir, err := dialog.Directory().Title("Save Location").Browse(); err == nil && dir != "" {
-				w.dir.SetText(dir)
-			}
+			// Run dialog in goroutine to avoid blocking Fyne's UI thread
+			go func() {
+				if dir, err := dialog.Directory().Title("Save Location").Browse(); err == nil && dir != "" {
+					w.dir.SetText(dir)
+				}
+			}()
 		}),
 		w.dir)
 	top = container.NewBorder(top, nil, widget.NewLabel("Save Type:"), nil, w.saveType)

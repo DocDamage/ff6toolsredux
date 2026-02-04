@@ -69,9 +69,9 @@ type CharacterDiffStats struct {
 
 // EquipmentDiffStats tracks equipment changes
 type EquipmentDiffStats struct {
-	ChangedCount    int
-	WeaponChanges   int
-	ArmorChanges    int
+	ChangedCount     int
+	WeaponChanges    int
+	ArmorChanges     int
 	AccessoryChanges int
 }
 
@@ -108,10 +108,10 @@ func (c *Comparator) Compare() DiffReport {
 	report := DiffReport{
 		Diffs: make([]Diff, 0),
 		Statistics: DiffStatistics{
-			CharacterDiff:   CharacterDiffStats{},
-			EquipmentDiff:   EquipmentDiffStats{},
-			InventoryDiff:   InventoryDiffStats{},
-			EsperDiff:       EsperDiffStats{},
+			CharacterDiff: CharacterDiffStats{},
+			EquipmentDiff: EquipmentDiffStats{},
+			InventoryDiff: InventoryDiffStats{},
+			EsperDiff:     EsperDiffStats{},
 		},
 	}
 

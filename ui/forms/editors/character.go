@@ -1,6 +1,7 @@
 package editors
 
 import (
+	"fmt"
 	"strings"
 
 	"ffvi_editor/models"
@@ -51,6 +52,17 @@ type (
 )
 
 func NewCharacter(c *models.Character) *Character {
+	fmt.Printf("[DEBUG NewCharacter] called with c=%v\n", c != nil)
+	if c == nil {
+		fmt.Println("[DEBUG NewCharacter] WARNING: nil character, returning error editor")
+		// Return empty character editor with warning
+		return &Character{
+			BaseWidget:    widget.BaseWidget{},
+			warningLabel:  widget.NewLabel("Error: Character not found"),
+			statusEffects: container.NewVBox(widget.NewLabel("Status Effects: (none)")),
+		}
+	}
+	fmt.Printf("[DEBUG NewCharacter] Creating editor for %s (ID=%d)\n", c.Name, c.ID)
 	e := &Character{
 		BaseWidget: widget.BaseWidget{}, c: c, name: binding.BindString(&c.Name),
 		isEnabled:     binding.BindBool(&c.IsEnabled),
@@ -80,10 +92,20 @@ func NewCharacter(c *models.Character) *Character {
 		initialMagic:     c.Magic}
 	e.ExtendBaseWidget(e)
 	e.statusEffects = e.createStatusEffects()
+	fmt.Printf("[DEBUG NewCharacter] Editor created successfully for %s\n", c.Name)
 	return e
 }
 
 func (e *Character) CreateRenderer() fyne.WidgetRenderer {
+	fmt.Printf("[DEBUG CreateRenderer] called, e.c=%v\n", e.c != nil)
+	if e.c == nil {
+		fmt.Println("[DEBUG CreateRenderer] WARNING: nil character")
+		return widget.NewSimpleRenderer(container.NewVBox(
+			widget.NewLabel("Error: Character not found"),
+			widget.NewLabel("Please check character data"),
+		))
+	}
+	fmt.Printf("[DEBUG CreateRenderer] Rendering character: %s\n", e.c.Name)
 	name := widget.NewEntryWithData(e.name)
 	name.Validator = nil
 	e.currentHPEntry = inputs.NewIntEntryWithBinding(e.currentHP)
@@ -254,6 +276,10 @@ func (e *Character) validateHPMP() {
 func (e *Character) createStatusEffects() fyne.CanvasObject {
 	container := container.NewVBox()
 	container.Add(widget.NewLabel("Status Effects:"))
+
+	if e.c == nil {
+		return container
+	}
 
 	for _, se := range e.c.StatusEffects {
 		check := widget.NewCheck(se.Name, func(checked bool) {

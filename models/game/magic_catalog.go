@@ -4,33 +4,33 @@ package game
 type MagicSchool string
 
 const (
-	SchoolBlack    MagicSchool = "Black"
-	SchoolWhite    MagicSchool = "White"
-	SchoolBlue     MagicSchool = "Blue"
-	SchoolRed      MagicSchool = "Red"
-	SchoolSpecial  MagicSchool = "Special"
-	SchoolEsper    MagicSchool = "Esper"
-	SchoolDance    MagicSchool = "Dance"
-	SchoolSkill    MagicSchool = "Skill"
-	SchoolLore     MagicSchool = "Lore"
+	SchoolBlack   MagicSchool = "Black"
+	SchoolWhite   MagicSchool = "White"
+	SchoolBlue    MagicSchool = "Blue"
+	SchoolRed     MagicSchool = "Red"
+	SchoolSpecial MagicSchool = "Special"
+	SchoolEsper   MagicSchool = "Esper"
+	SchoolDance   MagicSchool = "Dance"
+	SchoolSkill   MagicSchool = "Skill"
+	SchoolLore    MagicSchool = "Lore"
 )
 
 // MagicEntry represents a single spell
 type MagicEntry struct {
-	ID              int
-	Name            string
-	School          MagicSchool
-	Cost            uint8
-	Power           uint8
-	Accuracy        uint8
-	Effect          string
-	Description     string
-	LearnedBy       []string // Character names
-	LearnMethod     string   // "natural", "item", "esper", "lore"
-	RequiredLevel   uint8
-	CanTarget       string // "single", "multi", "party", "area"
-	Element         string
-	Status          []string // Status effects applied
+	ID            int
+	Name          string
+	School        MagicSchool
+	Cost          uint8
+	Power         uint8
+	Accuracy      uint8
+	Effect        string
+	Description   string
+	LearnedBy     []string // Character names
+	LearnMethod   string   // "natural", "item", "esper", "lore"
+	RequiredLevel uint8
+	CanTarget     string // "single", "multi", "party", "area"
+	Element       string
+	Status        []string // Status effects applied
 }
 
 // MagicCatalog stores all spells organized by school
@@ -72,72 +72,72 @@ func NewMagicCatalog() *MagicCatalog {
 // initializeBlackMagic populates black magic spells (69 total)
 func initializeBlackMagic(black map[int]*MagicEntry) {
 	black[1] = &MagicEntry{
-		ID:            1,
-		Name:          "Fire",
-		School:        SchoolBlack,
-		Cost:          4,
-		Power:         10,
-		Accuracy:      100,
-		Effect:        "Deals fire damage",
-		Description:   "Fire spell dealing moderate damage",
-		LearnMethod:   "natural",
-		CanTarget:     "single",
-		Element:       "Fire",
+		ID:          1,
+		Name:        "Fire",
+		School:      SchoolBlack,
+		Cost:        4,
+		Power:       10,
+		Accuracy:    100,
+		Effect:      "Deals fire damage",
+		Description: "Fire spell dealing moderate damage",
+		LearnMethod: "natural",
+		CanTarget:   "single",
+		Element:     "Fire",
 	}
 
 	black[2] = &MagicEntry{
-		ID:            2,
-		Name:          "Ice",
-		School:        SchoolBlack,
-		Cost:          4,
-		Power:         10,
-		Accuracy:      100,
-		Effect:        "Deals ice damage",
-		Description:   "Ice spell dealing moderate damage",
-		LearnMethod:   "natural",
-		CanTarget:     "single",
-		Element:       "Ice",
+		ID:          2,
+		Name:        "Ice",
+		School:      SchoolBlack,
+		Cost:        4,
+		Power:       10,
+		Accuracy:    100,
+		Effect:      "Deals ice damage",
+		Description: "Ice spell dealing moderate damage",
+		LearnMethod: "natural",
+		CanTarget:   "single",
+		Element:     "Ice",
 	}
 
 	black[3] = &MagicEntry{
-		ID:            3,
-		Name:          "Bolt",
-		School:        SchoolBlack,
-		Cost:          4,
-		Power:         10,
-		Accuracy:      100,
-		Effect:        "Deals lightning damage",
-		Description:   "Lightning spell dealing moderate damage",
-		LearnMethod:   "natural",
-		CanTarget:     "single",
-		Element:       "Lightning",
+		ID:          3,
+		Name:        "Bolt",
+		School:      SchoolBlack,
+		Cost:        4,
+		Power:       10,
+		Accuracy:    100,
+		Effect:      "Deals lightning damage",
+		Description: "Lightning spell dealing moderate damage",
+		LearnMethod: "natural",
+		CanTarget:   "single",
+		Element:     "Lightning",
 	}
 
 	black[4] = &MagicEntry{
-		ID:            4,
-		Name:          "Poison",
-		School:        SchoolBlack,
-		Cost:          6,
-		Power:         8,
-		Accuracy:      100,
-		Effect:        "Poisons enemy",
-		Description:   "Causes poison status",
-		LearnMethod:   "natural",
-		CanTarget:     "single",
-		Status:        []string{"Poison"},
+		ID:          4,
+		Name:        "Poison",
+		School:      SchoolBlack,
+		Cost:        6,
+		Power:       8,
+		Accuracy:    100,
+		Effect:      "Poisons enemy",
+		Description: "Causes poison status",
+		LearnMethod: "natural",
+		CanTarget:   "single",
+		Status:      []string{"Poison"},
 	}
 
 	black[5] = &MagicEntry{
-		ID:            5,
-		Name:          "Drain",
-		School:        SchoolBlack,
-		Cost:          8,
-		Power:         15,
-		Accuracy:      100,
-		Effect:        "Drain enemy HP",
-		Description:   "Drains enemy HP to caster",
-		LearnMethod:   "natural",
-		CanTarget:     "single",
+		ID:          5,
+		Name:        "Drain",
+		School:      SchoolBlack,
+		Cost:        8,
+		Power:       15,
+		Accuracy:    100,
+		Effect:      "Drain enemy HP",
+		Description: "Drains enemy HP to caster",
+		LearnMethod: "natural",
+		CanTarget:   "single",
 	}
 
 	// Continue with more black magic entries...
@@ -163,16 +163,16 @@ func initializeBlackMagic(black map[int]*MagicEntry) {
 // initializeWhiteMagic populates white magic spells (52 total)
 func initializeWhiteMagic(white map[int]*MagicEntry) {
 	white[1] = &MagicEntry{
-		ID:            1,
-		Name:          "Cure",
-		School:        SchoolWhite,
-		Cost:          5,
-		Power:         0,
-		Accuracy:      100,
-		Effect:        "Restores HP",
-		Description:   "Basic healing spell",
-		LearnMethod:   "natural",
-		CanTarget:     "single",
+		ID:          1,
+		Name:        "Cure",
+		School:      SchoolWhite,
+		Cost:        5,
+		Power:       0,
+		Accuracy:    100,
+		Effect:      "Restores HP",
+		Description: "Basic healing spell",
+		LearnMethod: "natural",
+		CanTarget:   "single",
 	}
 
 	white[2] = &MagicEntry{
@@ -222,30 +222,30 @@ func initializeWhiteMagic(white map[int]*MagicEntry) {
 // initializeBlueMagic populates blue magic spells (24 total)
 func initializeBlueMagic(blue map[int]*MagicEntry) {
 	blue[1] = &MagicEntry{
-		ID:            1,
-		Name:          "Raging Fists",
-		School:        SchoolBlue,
-		Cost:          8,
-		Power:         20,
-		Accuracy:      100,
-		Effect:        "Physical attack",
-		Description:   "Copied from an enemy ability",
-		LearnMethod:   "lore",
-		CanTarget:     "single",
+		ID:          1,
+		Name:        "Raging Fists",
+		School:      SchoolBlue,
+		Cost:        8,
+		Power:       20,
+		Accuracy:    100,
+		Effect:      "Physical attack",
+		Description: "Copied from an enemy ability",
+		LearnMethod: "lore",
+		CanTarget:   "single",
 	}
 
 	blue[2] = &MagicEntry{
-		ID:            2,
-		Name:          "Aqualung",
-		School:        SchoolBlue,
-		Cost:          12,
-		Power:         25,
-		Accuracy:      100,
-		Effect:        "Water damage",
-		Description:   "Learned as Blue Magic",
-		LearnMethod:   "lore",
-		CanTarget:     "multi",
-		Element:       "Water",
+		ID:          2,
+		Name:        "Aqualung",
+		School:      SchoolBlue,
+		Cost:        12,
+		Power:       25,
+		Accuracy:    100,
+		Effect:      "Water damage",
+		Description: "Learned as Blue Magic",
+		LearnMethod: "lore",
+		CanTarget:   "multi",
+		Element:     "Water",
 	}
 	// Continue with more blue magic entries...
 }
@@ -253,31 +253,31 @@ func initializeBlueMagic(blue map[int]*MagicEntry) {
 // initializeRedMagic populates red magic spells (8 total)
 func initializeRedMagic(red map[int]*MagicEntry) {
 	red[1] = &MagicEntry{
-		ID:            1,
-		Name:          "Fire",
-		School:        SchoolRed,
-		Cost:          4,
-		Power:         10,
-		Accuracy:      100,
-		Effect:        "Deals fire damage",
-		Description:   "Red magic fire spell",
-		LearnMethod:   "natural",
-		CanTarget:     "single",
-		Element:       "Fire",
+		ID:          1,
+		Name:        "Fire",
+		School:      SchoolRed,
+		Cost:        4,
+		Power:       10,
+		Accuracy:    100,
+		Effect:      "Deals fire damage",
+		Description: "Red magic fire spell",
+		LearnMethod: "natural",
+		CanTarget:   "single",
+		Element:     "Fire",
 	}
 
 	red[8] = &MagicEntry{
-		ID:            8,
-		Name:          "Meteor",
-		School:        SchoolRed,
-		Cost:          40,
-		Power:         50,
-		Accuracy:      80,
-		Effect:        "Calls meteors",
-		Description:   "Deals heavy non-elemental damage",
-		LearnMethod:   "esper",
-		CanTarget:     "multi",
-		Element:       "None",
+		ID:          8,
+		Name:        "Meteor",
+		School:      SchoolRed,
+		Cost:        40,
+		Power:       50,
+		Accuracy:    80,
+		Effect:      "Calls meteors",
+		Description: "Deals heavy non-elemental damage",
+		LearnMethod: "esper",
+		CanTarget:   "multi",
+		Element:     "None",
 	}
 	// Continue with more red magic entries...
 }
@@ -285,29 +285,29 @@ func initializeRedMagic(red map[int]*MagicEntry) {
 // initializeSpecialMagic populates special magic (127 total)
 func initializeSpecialMagic(special map[int]*MagicEntry) {
 	special[1] = &MagicEntry{
-		ID:            1,
-		Name:          "Haste",
-		School:        SchoolSpecial,
-		Cost:          20,
-		Power:         0,
-		Accuracy:      100,
-		Effect:        "Increases speed",
-		Description:   "Doubles speed of party",
-		LearnMethod:   "natural",
-		CanTarget:     "party",
+		ID:          1,
+		Name:        "Haste",
+		School:      SchoolSpecial,
+		Cost:        20,
+		Power:       0,
+		Accuracy:    100,
+		Effect:      "Increases speed",
+		Description: "Doubles speed of party",
+		LearnMethod: "natural",
+		CanTarget:   "party",
 	}
 
 	special[2] = &MagicEntry{
-		ID:            2,
-		Name:          "Slow",
-		School:        SchoolSpecial,
-		Cost:          20,
-		Power:         0,
-		Accuracy:      100,
-		Effect:        "Decreases speed",
-		Description:   "Halves enemy speed",
-		LearnMethod:   "natural",
-		CanTarget:     "multi",
+		ID:          2,
+		Name:        "Slow",
+		School:      SchoolSpecial,
+		Cost:        20,
+		Power:       0,
+		Accuracy:    100,
+		Effect:      "Decreases speed",
+		Description: "Halves enemy speed",
+		LearnMethod: "natural",
+		CanTarget:   "multi",
 	}
 
 	special[127] = &MagicEntry{
@@ -403,20 +403,20 @@ func (catalog *MagicCatalog) GetAllMagic() []*MagicEntry {
 
 // GetMagicStats returns statistics about magic learning
 type MagicStats struct {
-	TotalSpells      int
-	LearnedCount     int
-	UnlearnedCount   int
-	ProgressPercent  float64
-	BySchool         map[MagicSchool]*SchoolStats
+	TotalSpells     int
+	LearnedCount    int
+	UnlearnedCount  int
+	ProgressPercent float64
+	BySchool        map[MagicSchool]*SchoolStats
 }
 
 // SchoolStats represents stats for a specific magic school
 type SchoolStats struct {
-	School       MagicSchool
-	Total        int
-	Learned      int
-	Unlearned    int
-	Percent      float64
+	School    MagicSchool
+	Total     int
+	Learned   int
+	Unlearned int
+	Percent   float64
 }
 
 // GetMagicStats calculates magic learning statistics

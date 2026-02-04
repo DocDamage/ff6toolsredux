@@ -1,5 +1,7 @@
 package pr
 
+import "fmt"
+
 type Inventory struct {
 	Size             int
 	Rows             []*Row
@@ -56,10 +58,12 @@ func (i *Inventory) Reset() {
 
 func (i *Inventory) Set(index int, row Row) {
 	if len(i.Rows) <= index {
-		i.Rows = append(i.Rows, &row)
-	} else {
-		i.Rows[index] = &row
+		// Expand the slice to accommodate the index
+		for len(i.Rows) <= index {
+			i.Rows = append(i.Rows, &Row{ItemID: 0, Count: 0})
+		}
 	}
+	i.Rows[index] = &row
 }
 
 func (i *Inventory) GetRowsForPrSave() []Row {
@@ -72,6 +76,15 @@ func (i *Inventory) GetRowsForPrSave() []Row {
 	return rows
 }
 
+func (i *Inventory) Get(itemID int) (Row, bool) {
+	for _, r := range i.Rows {
+		if r.ItemID == itemID {
+			return *r, true
+		}
+	}
+	return Row{}, false
+}
+
 func (i *Inventory) GetItemLookup() map[int]int {
 	m := make(map[int]int)
 	for _, r := range i.Rows {
@@ -80,31 +93,37 @@ func (i *Inventory) GetItemLookup() map[int]int {
 	return m
 }
 
-func (i *Inventory) AddNeeded(needed map[int]int) {
+// AddNeeded adds needed items to the inventory. Returns error if inventory is full.
+func (i *Inventory) AddNeeded(needed map[int]int) error {
+	// Remove items that already exist in inventory
 	for _, r := range i.Rows {
-		if /*count*/ _, found := needed[r.ItemID]; found /*&& r.Count < count*/ {
-			//r.Count = count
+		if _, found := needed[r.ItemID]; found {
 			delete(needed, r.ItemID)
 		}
 	}
 
-	if len(needed) > 0 {
-		var j int
-		for j = len(i.Rows) - 1; j >= 0; j-- {
-			if i.Rows[j] != nil && i.Rows[j].ItemID != 0 {
-				j += 1
-				break
-			}
-		}
-		for id, count := range needed {
-			if j >= len(i.Rows) {
-				// TODO add error?
-				return
-			}
-			i.Rows[j] = &Row{
-				ItemID: id,
-				Count:  count,
-			}
+	if len(needed) == 0 {
+		return nil
+	}
+
+	// Find first empty slot
+	j := 0
+	for ; j < len(i.Rows); j++ {
+		if i.Rows[j] == nil || i.Rows[j].ItemID == 0 {
+			break
 		}
 	}
+
+	// Add needed items to empty slots
+	for id, count := range needed {
+		if j >= len(i.Rows) {
+			return fmt.Errorf("inventory full: cannot add item %d (count %d)", id, count)
+		}
+		i.Rows[j] = &Row{
+			ItemID: id,
+			Count:  count,
+		}
+		j++
+	}
+	return nil
 }

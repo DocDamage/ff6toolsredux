@@ -112,45 +112,45 @@ const (
 type SyncConfig struct {
 	Provider           Provider
 	Enabled            bool
-	AutoSync           bool                // Auto-sync on save
-	SyncInterval       time.Duration       // Interval for periodic sync
-	ConflictResolution ConflictResolution  // How to handle conflicts
-	EncryptionEnabled  bool                // Encrypt before upload
-	EncryptionKey      []byte              // Encryption key (32 bytes for AES-256)
-	FolderPath         string              // Remote folder path
-	MaxRetries         int                 // Maximum retry attempts
-	RetryDelay         time.Duration       // Delay between retries
-	VerifyHashes       bool                // Verify file integrity via hashing
-	CompressFiles      bool                // Compress files before upload
+	AutoSync           bool               // Auto-sync on save
+	SyncInterval       time.Duration      // Interval for periodic sync
+	ConflictResolution ConflictResolution // How to handle conflicts
+	EncryptionEnabled  bool               // Encrypt before upload
+	EncryptionKey      []byte             // Encryption key (32 bytes for AES-256)
+	FolderPath         string             // Remote folder path
+	MaxRetries         int                // Maximum retry attempts
+	RetryDelay         time.Duration      // Delay between retries
+	VerifyHashes       bool               // Verify file integrity via hashing
+	CompressFiles      bool               // Compress files before upload
 }
 
 // SyncStatus represents the status of a sync operation
 type SyncStatus struct {
-	Provider          string        // Provider name
-	InProgress        bool
-	LastSync          time.Time
-	NextSync          time.Time
-	LastError         error
-	FilesUploaded     int
-	FilesDownloaded   int
-	ConflictsFound    int
-	Progress          float64       // 0.0 to 1.0
-	CurrentFile       string        // Currently processing file
-	IsAuthenticated   bool
-	StorageUsed       int64
-	StorageTotal      int64
+	Provider        string // Provider name
+	InProgress      bool
+	LastSync        time.Time
+	NextSync        time.Time
+	LastError       error
+	FilesUploaded   int
+	FilesDownloaded int
+	ConflictsFound  int
+	Progress        float64 // 0.0 to 1.0
+	CurrentFile     string  // Currently processing file
+	IsAuthenticated bool
+	StorageUsed     int64
+	StorageTotal    int64
 }
 
 // Conflict represents a sync conflict
 type Conflict struct {
-	FileName     string
-	LocalTime    time.Time
-	RemoteTime   time.Time
-	LocalHash    string
-	RemoteHash   string
-	LocalSize    int64
-	RemoteSize   int64
-	LocalID      string  // Local file ID/path
-	RemoteID     string  // Remote file ID
-	Resolution   ConflictResolution
+	FileName   string
+	LocalTime  time.Time
+	RemoteTime time.Time
+	LocalHash  string
+	RemoteHash string
+	LocalSize  int64
+	RemoteSize int64
+	LocalID    string // Local file ID/path
+	RemoteID   string // Remote file ID
+	Resolution ConflictResolution
 }

@@ -1,0 +1,29 @@
+name: Go Module Hygiene
+
+on:
+  push:
+    branches: [ main, ffvieditorupdated ]
+  pull_request:
+    branches: [ main, ffvieditorupdated ]
+
+jobs:
+  module-hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Verify go.mod and go.sum
+        run: |
+          go mod tidy
+          git diff --exit-code go.mod go.sum
+          go mod verify
+
+      - name: Checksum verification
+        run: |
+          go mod verify

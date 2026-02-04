@@ -15,14 +15,14 @@ import (
 
 // DropboxProvider implements Provider interface for Dropbox
 type DropboxProvider struct {
-	appKey       string
-	appSecret    string
-	accessToken  string
-	refreshToken string
+	appKey        string
+	appSecret     string
+	accessToken   string
+	refreshToken  string
 	authenticated bool
-	status       *SyncStatus
-	mu           sync.RWMutex
-	pathIDCache  map[string]string // path -> ID cache
+	status        *SyncStatus
+	mu            sync.RWMutex
+	pathIDCache   map[string]string // path -> ID cache
 }
 
 // NewDropboxProvider creates a new Dropbox provider

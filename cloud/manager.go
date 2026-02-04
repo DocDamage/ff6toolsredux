@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -23,6 +24,7 @@ type Manager struct {
 	mu         sync.RWMutex
 	stopCh     chan struct{}
 	syncTicker *time.Ticker
+	logger     *log.Logger
 }
 
 // New creates a new cloud sync manager with default config
@@ -40,6 +42,7 @@ func New() *Manager {
 		},
 		status: make(map[string]*SyncStatus),
 		stopCh: make(chan struct{}),
+		logger: log.New(log.Writer(), "[cloud] ", log.LstdFlags),
 	}
 }
 
@@ -50,6 +53,7 @@ func NewManager(config *SyncConfig) *Manager {
 		config:    config,
 		status:    make(map[string]*SyncStatus),
 		stopCh:    make(chan struct{}),
+		logger:    log.New(log.Writer(), "[cloud] ", log.LstdFlags),
 	}
 }
 
@@ -133,7 +137,9 @@ func (m *Manager) syncLoop() {
 		select {
 		case <-m.syncTicker.C:
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-			_ = m.SyncAll(ctx)
+			if err := m.SyncAll(ctx); err != nil {
+				m.logger.Printf("[cloud] periodic sync failed: %v", err)
+			}
 			cancel()
 		case <-m.stopCh:
 			return

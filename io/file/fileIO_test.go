@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/base64"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"ffvi_editor/global"
+
 	"github.com/kiamev/ffpr-save-cypher/rijndael"
 )
 
@@ -22,9 +24,10 @@ func TestLoadFileInvalidPath(t *testing.T) {
 func TestLoadFilePS(t *testing.T) {
 	// Create a temporary test file
 	testData := []byte("test data for ps")
-	tmpFile := t.TempDir() + "/test.save"
+	tmpDir := t.TempDir()
+	tmpFile := tmpDir + "/test.save"
 
-	if err := writeTestFile(tmpFile, testData); err != nil {
+	if err := writeTestFile(tmpDir, "test.save", testData); err != nil {
 		t.Fatalf("failed to write test file: %v", err)
 	}
 
@@ -43,8 +46,9 @@ func TestLoadFilePS(t *testing.T) {
 
 // TestLoadFileTooShort tests error handling for truncated files
 func TestLoadFileTooShort(t *testing.T) {
-	tmpFile := t.TempDir() + "/test.save"
-	if err := writeTestFile(tmpFile, []byte("abc")); err != nil {
+	tmpDir := t.TempDir()
+	tmpFile := tmpDir + "/test.save"
+	if err := writeTestFile(tmpDir, "test.save", []byte("abc")); err != nil {
 		t.Fatalf("failed to write test file: %v", err)
 	}
 
@@ -60,8 +64,9 @@ func TestLoadFileBOMRemoval(t *testing.T) {
 	testData := []byte("test")              // dummy data to pass base64 check
 	fileContent := append(bom, testData...) // prepend BOM
 
-	tmpFile := t.TempDir() + "/test.save"
-	if err := writeTestFile(tmpFile, fileContent); err != nil {
+	tmpDir := t.TempDir()
+	tmpFile := tmpDir + "/test.save"
+	if err := writeTestFile(tmpDir, "test.save", fileContent); err != nil {
 		t.Fatalf("failed to write test file: %v", err)
 	}
 
@@ -78,7 +83,8 @@ func TestLoadFileBOMRemoval(t *testing.T) {
 // TestSaveFilePC tests PC save file encryption and encoding
 func TestSaveFilePC(t *testing.T) {
 	testData := []byte(`{"test": "data"}`)
-	tmpFile := t.TempDir() + "/test.save"
+	tmpDir := t.TempDir()
+	tmpFile := tmpDir + "/test.save"
 
 	err := SaveFile(testData, tmpFile, nil, global.PC)
 	if err != nil {
@@ -110,7 +116,8 @@ func TestSaveFilePC(t *testing.T) {
 // TestSaveFilePS tests PlayStation save file (no transformation)
 func TestSaveFilePS(t *testing.T) {
 	testData := []byte("original ps data")
-	tmpFile := t.TempDir() + "/test.save"
+	tmpDir := t.TempDir()
+	tmpFile := tmpDir + "/test.save"
 
 	err := SaveFile(testData, tmpFile, nil, global.PS)
 	if err != nil {
@@ -131,7 +138,8 @@ func TestSaveFilePS(t *testing.T) {
 func TestSaveFileWithBOM(t *testing.T) {
 	testData := []byte(`{"test": "data"}`)
 	bom := []byte{239, 187, 191}
-	tmpFile := t.TempDir() + "/test.save"
+	tmpDir := t.TempDir()
+	tmpFile := tmpDir + "/test.save"
 
 	err := SaveFile(testData, tmpFile, bom, global.PC)
 	if err != nil {
@@ -169,8 +177,9 @@ func TestRoundTripIntegration(t *testing.T) {
 
 // Helper functions
 
-func writeTestFile(path string, data []byte) error {
-	return writeFile(path, data)
+// writeTestFile writes a file in the given temp directory (enforces test isolation)
+func writeTestFile(tmpDir, filename string, data []byte) error {
+	return writeFile(filepath.Join(tmpDir, filename), data)
 }
 
 func readTestFile(path string) ([]byte, error) {

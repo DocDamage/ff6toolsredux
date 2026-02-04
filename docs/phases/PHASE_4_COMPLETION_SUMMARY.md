@@ -527,7 +527,7 @@ err := manager.UploadFile(ctx, "Google Drive", localPath, remotePath)
    - Optional: `google.golang.org/api/drive/v3` for Google Drive API
    - Optional: `github.com/dropbox/dropbox-sdk-go` for Dropbox API
 
-2. **Configuration**: Cloud settings stored in ff6editor.config
+2. **Configuration**: Cloud settings stored in ff6editor.settings.json
    - Secure: Tokens stored with file permissions 0600
    - Encrypted secrets recommended in production
 

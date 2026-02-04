@@ -21,20 +21,6 @@ func (p *PR) Save(slot int, toFile string, saveType global.SaveFileType) (err er
 		slTarget = jo.NewOrderedMap()
 	)
 
-	/*/ TODO Test bulk item override
-	j := 0
-	for i := 30; i <= 42; i++ {
-		pri.GetInventory().Set(j, pri.Row{
-			ItemID: 200 + i,
-			Count:  i,
-		})
-		j++
-	}
-	//*/
-
-	// p.populateNeeded(&needed)
-	// pri.GetInventory().AddNeeded(needed)
-
 	var addedItems []int
 	if err = p.saveCharacters(&addedItems); err != nil {
 		return
@@ -109,6 +95,31 @@ func (p *PR) Save(slot int, toFile string, saveType global.SaveFileType) (err er
 	return file.SaveFile(data, toFile, p.fileTrimmed, saveType)
 }
 
+// clamp ensures a value is within min and max bounds
+func clamp(val, min, max int) int {
+	if val < min {
+		return min
+	}
+	if val > max {
+		return max
+	}
+	return val
+}
+
+// clampHPMP ensures HP/MP values are valid (at least 1 if max > 0)
+func clampHPMP(current, max int) int {
+	if current < 0 {
+		current = 0
+	}
+	if current == 0 && max > 0 {
+		current = 1
+	}
+	if current > max {
+		current = max
+	}
+	return current
+}
+
 func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 	for _, d := range p.Characters {
 		if d == nil {
@@ -133,56 +144,16 @@ func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 		c := pri.GetCharacter(o.Name)
 
 		// Clamp HP and MP values to valid ranges
-		if c.HP.Max < o.HPBase {
-			c.HP.Max = o.HPBase
-		}
-		if c.MP.Max < o.MPBase {
-			c.MP.Max = o.MPBase
-		}
-		if c.HP.Current < 0 {
-			c.HP.Current = 0
-		}
-		if c.HP.Current == 0 && c.HP.Max > 0 {
-			c.HP.Current = 1
-		}
-		if c.HP.Current > c.HP.Max {
-			c.HP.Current = c.HP.Max
-		}
-		if c.MP.Current < 0 {
-			c.MP.Current = 0
-		}
-		if c.MP.Current == 0 && c.MP.Max > 0 {
-			c.MP.Current = 1
-		}
-		if c.MP.Current > c.MP.Max {
-			c.MP.Current = c.MP.Max
-		}
+		c.HP.Max = clamp(c.HP.Max, o.HPBase, c.HP.Max)
+		c.MP.Max = clamp(c.MP.Max, o.MPBase, c.MP.Max)
+		c.HP.Current = clampHPMP(c.HP.Current, c.HP.Max)
+		c.MP.Current = clampHPMP(c.MP.Current, c.MP.Max)
 
 		// Clamp stats to 0-255
-		if c.Vigor < 0 {
-			c.Vigor = 0
-		}
-		if c.Vigor > 255 {
-			c.Vigor = 255
-		}
-		if c.Stamina < 0 {
-			c.Stamina = 0
-		}
-		if c.Stamina > 255 {
-			c.Stamina = 255
-		}
-		if c.Speed < 0 {
-			c.Speed = 0
-		}
-		if c.Speed > 255 {
-			c.Speed = 255
-		}
-		if c.Magic < 0 {
-			c.Magic = 0
-		}
-		if c.Magic > 255 {
-			c.Magic = 255
-		}
+		c.Vigor = clamp(c.Vigor, 0, 255)
+		c.Stamina = clamp(c.Stamina, 0, 255)
+		c.Speed = clamp(c.Speed, 0, 255)
+		c.Magic = clamp(c.Magic, 0, 255)
 
 		// Clamp level to 1-99
 		if c.Level < 1 {
@@ -261,15 +232,15 @@ func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 			}
 		}
 
-		// TODO Save Status Effects
-		// statusBytes := consts.GenerateBytes(c.StatusEffects)
-		// sl := make([]interface{}, len(statusBytes))
-		// for i, b := range statusBytes {
-		// 	sl[i] = int(b)
-		// }
-		// if err = p.setTarget(d, CurrentConditionList, sl); err != nil {
-		// 	return
-		// }
+		// Save Status Effects
+		statusBytes := consts.GenerateBytes(c.StatusEffects)
+		sl := make([]interface{}, len(statusBytes))
+		for i, b := range statusBytes {
+			sl[i] = int(b)
+		}
+		if err = p.setTarget(d, CurrentConditionList, sl); err != nil {
+			return
+		}
 
 		if err = p.setValue(params, AdditionalPower, c.Vigor); err != nil {
 			return
@@ -313,32 +284,28 @@ func (p *PR) saveCharacters(addedItems *[]int) (err error) {
 			return
 		}
 
-		// Cyan
-		if jobID == 3 {
+		// Save character-specific skills based on job ID
+		if pr.IsJobWithBushido(jobID) {
 			if err = p.saveSkills(d, pr.BushidoFrom, pr.BushidoTo, pr.BushidoOffset, pr.BushidoLookupByID); err != nil {
 				return
 			}
 		}
-		// Sabin
-		if jobID == 6 {
+		if pr.IsJobWithBlitz(jobID) {
 			if err = p.saveSkills(d, pr.BlitzFrom, pr.BlitzTo, pr.BlitzOffset, pr.BlitzLookupByID); err != nil {
 				return
 			}
 		}
-		// Mog
-		if id == 16 {
+		if pr.IsCharacterWithDance(id) {
 			if err = p.saveSkills(d, pr.DanceFrom, pr.DanceTo, pr.DanceOffset, pr.DanceLookupByID); err != nil {
 				return
 			}
 		}
-		// Strago
-		if jobID == 8 {
+		if pr.IsJobWithLore(jobID) {
 			if err = p.saveSkills(d, pr.LoreFrom, pr.LoreTo, pr.LoreOffset, pr.LoreLookupByID); err != nil {
 				return
 			}
 		}
-		// Gau
-		if jobID == 12 {
+		if pr.IsJobWithRage(jobID) {
 			if err = p.saveSkills(d, pr.RageFrom, pr.RageTo, pr.RageOffset, pr.RageLookupByID); err != nil {
 				return
 			}
@@ -903,29 +870,4 @@ func (p *PR) revertUnicodeNames(b []byte) []byte {
 		s = strings.Replace(s, r.Replaced, r.Original, 1)
 	}
 	return []byte(s)
-	// strconv.Unquote(strings.Replace(strconv.Quote(string(original)), `\\x`, `\x`, -1));
-	/*i := 0
-	for j := 0; j < len(p.names); j++ {
-		original := p.names[j].Original
-		replaced := p.names[j].Replaced
-		for ; i < len(b)-10; i++ {
-			if b[i] == replaced[0] {
-				matched := true
-				for k := 1; k < len(replaced); k++ {
-					if b[i+k] != replaced[k] {
-						matched = false
-						break
-					}
-				}
-				if matched {
-					for k := 0; k < len(replaced); k++ {
-						b[i+k] = original[k]
-					}
-					i += len(replaced)
-					break
-				}
-			}
-		}
-	}
-	return b*/
 }
